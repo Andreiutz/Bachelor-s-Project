@@ -1,0 +1,97 @@
+
+batch_size: 128
+epochs: 6
+bins per octave: 36
+use momentum: False
+momentum value: 0.9
+data_path: ../../data/archived/
+con_win_size: 9
+id_file: id_22050.csv
+initial learning rate: 0.01
+decay steps: 4500
+decay rate: 0.66
+staircase: True
+other info: L1=0.003 for first 2 dense layers of each string
+Model: "model"
+__________________________________________________________________________________________________
+ Layer (type)                   Output Shape         Param #     Connected to                     
+==================================================================================================
+ input_1 (InputLayer)           [(None, 288, 9, 1)]  0           []                               
+                                                                                                  
+ conv2d (Conv2D)                (None, 286, 7, 32)   320         ['input_1[0][0]']                
+                                                                                                  
+ conv2d_1 (Conv2D)              (None, 284, 5, 64)   18496       ['conv2d[0][0]']                 
+                                                                                                  
+ conv2d_2 (Conv2D)              (None, 282, 3, 64)   36928       ['conv2d_1[0][0]']               
+                                                                                                  
+ max_pooling2d (MaxPooling2D)   (None, 141, 1, 64)   0           ['conv2d_2[0][0]']               
+                                                                                                  
+ dropout (Dropout)              (None, 141, 1, 64)   0           ['max_pooling2d[0][0]']          
+                                                                                                  
+ flatten (Flatten)              (None, 9024)         0           ['dropout[0][0]']                
+                                                                                                  
+ dense (Dense)                  (None, 128)          1155200     ['flatten[0][0]']                
+                                                                                                  
+ dense_3 (Dense)                (None, 128)          1155200     ['flatten[0][0]']                
+                                                                                                  
+ dense_6 (Dense)                (None, 128)          1155200     ['flatten[0][0]']                
+                                                                                                  
+ dense_9 (Dense)                (None, 128)          1155200     ['flatten[0][0]']                
+                                                                                                  
+ dense_12 (Dense)               (None, 128)          1155200     ['flatten[0][0]']                
+                                                                                                  
+ dense_15 (Dense)               (None, 128)          1155200     ['flatten[0][0]']                
+                                                                                                  
+ dense_1 (Dense)                (None, 126)          16254       ['dense[0][0]']                  
+                                                                                                  
+ dense_4 (Dense)                (None, 126)          16254       ['dense_3[0][0]']                
+                                                                                                  
+ dense_7 (Dense)                (None, 126)          16254       ['dense_6[0][0]']                
+                                                                                                  
+ dense_10 (Dense)               (None, 126)          16254       ['dense_9[0][0]']                
+                                                                                                  
+ dense_13 (Dense)               (None, 126)          16254       ['dense_12[0][0]']               
+                                                                                                  
+ dense_16 (Dense)               (None, 126)          16254       ['dense_15[0][0]']               
+                                                                                                  
+ dropout_1 (Dropout)            (None, 126)          0           ['dense_1[0][0]']                
+                                                                                                  
+ dropout_2 (Dropout)            (None, 126)          0           ['dense_4[0][0]']                
+                                                                                                  
+ dropout_3 (Dropout)            (None, 126)          0           ['dense_7[0][0]']                
+                                                                                                  
+ dropout_4 (Dropout)            (None, 126)          0           ['dense_10[0][0]']               
+                                                                                                  
+ dropout_5 (Dropout)            (None, 126)          0           ['dense_13[0][0]']               
+                                                                                                  
+ dropout_6 (Dropout)            (None, 126)          0           ['dense_16[0][0]']               
+                                                                                                  
+ dense_2 (Dense)                (None, 63)           8001        ['dropout_1[0][0]']              
+                                                                                                  
+ dense_5 (Dense)                (None, 63)           8001        ['dropout_2[0][0]']              
+                                                                                                  
+ dense_8 (Dense)                (None, 63)           8001        ['dropout_3[0][0]']              
+                                                                                                  
+ dense_11 (Dense)               (None, 63)           8001        ['dropout_4[0][0]']              
+                                                                                                  
+ dense_14 (Dense)               (None, 63)           8001        ['dropout_5[0][0]']              
+                                                                                                  
+ dense_17 (Dense)               (None, 63)           8001        ['dropout_6[0][0]']              
+                                                                                                  
+ EString (Dense)                (None, 21)           1344        ['dense_2[0][0]']                
+                                                                                                  
+ AString (Dense)                (None, 21)           1344        ['dense_5[0][0]']                
+                                                                                                  
+ DString (Dense)                (None, 21)           1344        ['dense_8[0][0]']                
+                                                                                                  
+ GString (Dense)                (None, 21)           1344        ['dense_11[0][0]']               
+                                                                                                  
+ BString (Dense)                (None, 21)           1344        ['dense_14[0][0]']               
+                                                                                                  
+ eString (Dense)                (None, 21)           1344        ['dense_17[0][0]']               
+                                                                                                  
+==================================================================================================
+Total params: 7,140,538
+Trainable params: 7,140,538
+Non-trainable params: 0
+__________________________________________________________________________________________________

@@ -29,16 +29,16 @@ class PreprocessService:
         # read file
         y, sr = self.__read_audio(file)
         # split segments
-        segments = self.__onset_detection(y=y, sr=sr)
+        segments = [] #self.__onset_detection(y=y, sr=sr)
         # write to temp folder
         self.__save_temp_audio_files(sr=sr, segments=segments, folder_name=folder_name)
         #save full audio
-        write(f"../data/audio/temp/{folder_name}/audio.wav", sr, y)
+        write(f"data/audio/temp/{folder_name}/audio.wav", sr, y)
         # archive files
         self.__archive_files(folder_name=folder_name)
         #archive full audio
-        self.__archive_file(f"../data/audio/temp/{folder_name}/audio.wav",
-                            f"../data/archived/temp/{folder_name}/audio.npz")
+        self.__archive_file(f"data/audio/temp/{folder_name}/audio.wav",
+                            f"data/archived/temp/{folder_name}/audio.npz")
         return folder_name
 
 
@@ -85,23 +85,25 @@ class PreprocessService:
         return result
 
     def __save_temp_audio_files(self, sr, segments : List[np.ndarray], folder_name : str):
-        directory_path = f"../data/audio/temp/{folder_name}/split/"
+        directory_path = f"data/audio/temp/{folder_name}/split/"
         if not os.path.exists(directory_path):
             os.makedirs(directory_path)
-        for i, segment in enumerate(segments):
-            write(f"{directory_path}/temp_{self.__generate_index(i+1)}.wav", sr, segment)
+        # for i, segment in enumerate(segments):
+        #     write(f"{directory_path}/temp_{self.__generate_index(i+1)}.wav", sr, segment)
+        pass
 
     def __archive_files(self, folder_name : str):
 
-        archive_path = f"../data/archived/temp/{folder_name}/split"
-        audio_path = f"../data/audio/temp/{folder_name}/split"
+        archive_path = f"data/archived/temp/{folder_name}/split"
+        audio_path = f"data/audio/temp/{folder_name}/split"
 
         if not os.path.exists(archive_path):
             os.makedirs(archive_path)
-
-        for audio_file in os.listdir(audio_path):
-            npz_file = audio_file.replace('.wav', '.npz')
-            self.__archive_file(os.path.join(audio_path, audio_file), os.path.join(archive_path, npz_file))
+        #
+        # for audio_file in os.listdir(audio_path):
+        #     npz_file = audio_file.replace('.wav', '.npz')
+        #     self.__archive_file(os.path.join(audio_path, audio_file), os.path.join(archive_path, npz_file))
+        pass
 
     def __archive_file(self, audio_file_path : str, archive_file_path : str):
         output = {}

@@ -1,2 +1,6 @@
 *.npz
 *.wav
+*.jams
+*.index
+*.pb
+*.data-00000-of-00001

@@ -26,24 +26,35 @@ class PreprocessService:
         if not file.filename.endswith('.wav'):
             raise InvalidFileFormatException('Invalid file format')
         folder_name = file.filename.replace('.wav', '')
-        # read file
-        y, sr = self.__read_audio(file)
-        # split segments
-        segments = [] #self.__onset_detection(y=y, sr=sr)
-        # write to temp folder
-        self.__save_temp_audio_files(sr=sr, segments=segments, folder_name=folder_name)
-        #save full audio
+
+        y, sr = self.__read_audio_from_file(file)
+
+        directory_path = f"../data/audio/{folder_name}"
+        if not os.path.exists(directory_path):
+            os.makedirs(directory_path)
+
         write(f"../data/audio/{folder_name}/audio.wav", sr, y)
         # archive files
-        self.__archive_files(folder_name=folder_name)
+        archive_path = f"../data/archived/{folder_name}"
+        if not os.path.exists(archive_path):
+            os.makedirs(archive_path)
         #archive full audio
         self.__archive_file(f"../data/audio/{folder_name}/audio.wav",
                             f"../data/archived/{folder_name}/audio.npz")
         return folder_name
 
+    def archive_file_from_folder(self, audio_folder_path : str):
+        archive_path = f"../data/archived/{audio_folder_path}"
 
-    def __read_audio(self, file : UploadFile) -> Tuple[np.ndarray, float]:
+        if not os.path.exists(archive_path):
+            os.makedirs(archive_path)
+        self.__archive_file(f"../data/audio/{audio_folder_path}/audio.wav",
+                            f"../data/archived/{audio_folder_path}/audio.npz")
+    def __read_audio_from_file(self, file : UploadFile) -> Tuple[np.ndarray, float]:
         return librosa.load(file.file, sr=self.sr)
+
+    def __read_audio_from_filename(self, filename: str) -> Tuple[np.ndarray, float]:
+        return librosa.load(filename, sr=self.sr)
 
     #todo tune this function
     def __onset_detection(self, y : np.ndarray, sr : float) -> List[np.ndarray]:
@@ -85,20 +96,14 @@ class PreprocessService:
         return result
 
     def __save_temp_audio_files(self, sr, segments : List[np.ndarray], folder_name : str):
-        directory_path = f"../data/audio/{folder_name}"
-        if not os.path.exists(directory_path):
-            os.makedirs(directory_path)
+
         # for i, segment in enumerate(segments):
         #     write(f"{directory_path}/temp_{self.__generate_index(i+1)}.wav", sr, segment)
         pass
 
     def __archive_files(self, folder_name : str):
 
-        archive_path = f"../data/archived/{folder_name}"
-        audio_path = f"../data/audio/{folder_name}"
 
-        if not os.path.exists(archive_path):
-            os.makedirs(archive_path)
         #
         # for audio_file in os.listdir(audio_path):
         #     npz_file = audio_file.replace('.wav', '.npz')

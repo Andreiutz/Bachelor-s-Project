@@ -33,12 +33,12 @@ class PreprocessService:
         # write to temp folder
         self.__save_temp_audio_files(sr=sr, segments=segments, folder_name=folder_name)
         #save full audio
-        write(f"data/audio/temp/{folder_name}/audio.wav", sr, y)
+        write(f"../data/audio/{folder_name}/audio.wav", sr, y)
         # archive files
         self.__archive_files(folder_name=folder_name)
         #archive full audio
-        self.__archive_file(f"data/audio/temp/{folder_name}/audio.wav",
-                            f"data/archived/temp/{folder_name}/audio.npz")
+        self.__archive_file(f"../data/audio/{folder_name}/audio.wav",
+                            f"../data/archived/{folder_name}/audio.npz")
         return folder_name
 
 
@@ -85,7 +85,7 @@ class PreprocessService:
         return result
 
     def __save_temp_audio_files(self, sr, segments : List[np.ndarray], folder_name : str):
-        directory_path = f"data/audio/temp/{folder_name}/split/"
+        directory_path = f"../data/audio/{folder_name}"
         if not os.path.exists(directory_path):
             os.makedirs(directory_path)
         # for i, segment in enumerate(segments):
@@ -94,8 +94,8 @@ class PreprocessService:
 
     def __archive_files(self, folder_name : str):
 
-        archive_path = f"data/archived/temp/{folder_name}/split"
-        audio_path = f"data/audio/temp/{folder_name}/split"
+        archive_path = f"../data/archived/{folder_name}"
+        audio_path = f"../data/audio/{folder_name}"
 
         if not os.path.exists(archive_path):
             os.makedirs(archive_path)

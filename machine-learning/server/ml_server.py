@@ -6,6 +6,11 @@ import os
 import shutil
 import aiofiles
 
+#todo
+# tune onset detection
+# improve model
+# improve strum by batch (ignore silence)
+
 from server.service.PredictionService import PredictionService
 from server.service.PreprocessService import PreprocessService
 
@@ -36,7 +41,7 @@ def upload_file(file: UploadFile = File(...)):
 def predict_audio(file: UploadFile = File(...)):
     try:
         folder_name = preprocessService.preprocess_audio(file)
-        prediction = predictionService.predict(folder_name)
+        prediction = predictionService.predict_strums(folder_name)
         return JSONResponse(status_code=200, content=prediction)
     except Exception as e:
         return HTTPException(status_code=400, detail=str(e))

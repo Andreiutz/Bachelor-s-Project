@@ -1,10 +1,14 @@
+import sys
+import os
+
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_root)
+os.chdir(project_root)
+
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
 from server.repository.AudioFileRepository import AudioFileRepository
 from server.service.AudioFileService import AudioFileService
-import os
-import shutil
-import aiofiles
 
 #todo
 # tune onset detection
@@ -32,10 +36,20 @@ predictionService = PredictionService(preprocess_service=preprocessService)
 @app.post("/upload")
 def upload_file(file: UploadFile = File(...)):
     try:
-        audio_file=audioFileService.persist_audio_file(file=file, user_id='test')
-        return JSONResponse(status_code=200, content={"message": "File uploaded successfully"})
+        folder_name = preprocessService.preprocess_audio(file)
+        return JSONResponse(status_code=200, content={"message": f"File uploaded successfully in folder {folder_name}"})
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/predict")
+def predict_cached_audio(name: str):
+    try:
+        prediction = predictionService.predict_strums(name)
+        return JSONResponse(status_code=200, content=prediction)
+    except Exception as e:
+        return HTTPException(status_code=400, detail=str(e))
+
+
 
 @app.post("/predict")
 def predict_audio(file: UploadFile = File(...)):

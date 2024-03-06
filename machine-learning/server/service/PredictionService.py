@@ -1,10 +1,9 @@
 import os
-from typing import List
+import sys
 
-import librosa
-import numpy as np
 import tensorflow as tf
 from server.service.utils import *
+
 
 SECONDS_PER_FRAME = 1 / (22050 / 512)
 
@@ -13,7 +12,7 @@ class PredictionService:
         self.__preprocess_service = preprocess_service
         self.bins_per_octave = 36
         self.con_win_size = 9
-        self.model_path = "model/training/saved/2024-03-03/2_1/model"
+        self.model_path = "model/training/saved/2024-03-06/2_1/model/"
         self.model = tf.keras.models.load_model(self.model_path)
 
     # uses onset detection to determine each strum and computes the average for each interval
@@ -25,6 +24,10 @@ class PredictionService:
         }
         archive_path = "../data/archived/" + archive_folder_name + "/audio.npz"
         audio_path = "../data/audio/" + archive_folder_name + "/audio.wav"
+
+        if not os.path.exists(archive_path) or not os.path.exists(audio_path):
+            raise Exception("Folder unknown")
+
         result = self.__predict_full_audio(archive_path)
         y, sr = librosa.load(audio_path)
         y = librosa.util.normalize(y)

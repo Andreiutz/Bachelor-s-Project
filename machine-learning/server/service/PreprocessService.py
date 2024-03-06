@@ -95,20 +95,6 @@ class PreprocessService:
         result += str_i
         return result
 
-    def __save_temp_audio_files(self, sr, segments : List[np.ndarray], folder_name : str):
-
-        # for i, segment in enumerate(segments):
-        #     write(f"{directory_path}/temp_{self.__generate_index(i+1)}.wav", sr, segment)
-        pass
-
-    def __archive_files(self, folder_name : str):
-
-
-        #
-        # for audio_file in os.listdir(audio_path):
-        #     npz_file = audio_file.replace('.wav', '.npz')
-        #     self.__archive_file(os.path.join(audio_path, audio_file), os.path.join(archive_path, npz_file))
-        pass
 
     def __archive_file(self, audio_file_path : str, archive_file_path : str):
         output = {}

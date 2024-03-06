@@ -16,6 +16,7 @@ from tensorflow.keras.optimizers.schedules import ExponentialDecay
 # from keras.optimizers.schedules import ExponentialDecay
 from keras.regularizers import l1, l2, l1_l2
 from tensorflow.keras.utils import plot_model
+from keras.callbacks import ModelCheckpoint
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -37,7 +38,7 @@ class NeuralNetwork:
 
     def __init__(self,
                  batch_size=128,
-                 epochs=6,
+                 epochs=4,
                  con_win_size=9,
                  data_path="../../data/archived/",
                  id_file="id_22050.csv",
@@ -57,14 +58,12 @@ class NeuralNetwork:
             os.makedirs(self.save_folder)
 
         self.metrics = {}
-        self.metrics["pp"] = []
-        self.metrics["pr"] = []
-        self.metrics["pf"] = []
-        self.metrics["tp"] = []
-        self.metrics["tr"] = []
-        self.metrics["tf"] = []
-        self.metrics["tdr"] = []
-        self.metrics["data"] = ["g0", "g1", "g2", "g3", "g4", "g5", "mean", "std dev"]
+        self.metrics["pitch_precision"] = []
+        self.metrics["pitch_recall"] = []
+        self.metrics["pitch_f_score"] = []
+        self.metrics["tab_precision"] = []
+        self.metrics["tab_recall"] = []
+        self.metrics["tab_f_score"] = []
 
         self.bins_per_octave = 36
 
@@ -76,8 +75,8 @@ class NeuralNetwork:
 
         #Values for optimizer
         self.initial_learning_rate = 0.01  # Set your initial learning rate
-        self.decay_steps = 4500
-        self.decay_rate = 0.66
+        self.decay_steps = 4000
+        self.decay_rate = 0.7
         self.use_momentum=False
         self.momentum=0.9
 
@@ -106,33 +105,33 @@ class NeuralNetwork:
         else:
             self.data_split = folder_name
         self.partition = {}
-        self.partition["training"] = []
-        self.partition["validation"] = []
+        self.partition["train"] = []
+        self.partition["test"] = []
         if data_split >= 0:
             for ID in self.list_IDs:
                 guitarist = int(ID.split("_")[0])
                 if guitarist == data_split:
-                    self.partition["validation"].append(ID)
+                    self.partition["test"].append(ID)
                 else:
-                    self.partition["training"].append(ID)
+                    self.partition["train"].append(ID)
         else:
             if partition:
                 for ID in self.list_IDs:
                     chance = random.randint(0, 10)
                     if chance < 1:
-                        self.partition["validation"].append(ID)
+                        self.partition["test"].append(ID)
                     else:
-                        self.partition["training"].append(ID)
+                        self.partition["train"].append(ID)
             else:
                 for ID in self.list_IDs:
-                    self.partition["training"].append(ID)
+                    self.partition["train"].append(ID)
 
-        self.training_generator = DataGenerator(self.partition['training'],
+        self.training_generator = DataGenerator(self.partition["train"],
                                                 batch_size=self.batch_size,
                                                 shuffle=True,
                                                 con_win_size=self.con_win_size)
 
-        self.validation_generator = DataGenerator(self.partition['validation'],
+        self.validation_generator = DataGenerator(self.partition["test"],
                                                   batch_size=400, #to modify
                                                   shuffle=False,
                                                   con_win_size=self.con_win_size)
@@ -171,7 +170,7 @@ class NeuralNetwork:
 
         max_pooling_3 = MaxPooling2D(pool_size=(2,2))(conv2d_3)
 
-        dropout_1 = Dropout(0.5)(max_pooling_3)
+        dropout_1 = Dropout(0.6)(max_pooling_3)
 
         flatten_1 = Flatten()(dropout_1)
 
@@ -179,14 +178,14 @@ class NeuralNetwork:
         E_dense_1 = Dense(128, activation='relu', kernel_regularizer=l2(0.003))(flatten_1)
         E_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.003))(E_dense_1)
         E_dropout_1 = Dropout(0.5)(E_dense_2)
-        E_dense_3 = Dense(63, activation='relu')(E_dropout_1)
+        E_dense_3 = Dense(42, activation='relu')(E_dropout_1)
         EString_output = Dense(21, activation='softmax', name='EString')(E_dense_3)
 
         # AString output
         A_dense_1 = Dense(128, activation='relu', kernel_regularizer=l2(0.003))(flatten_1)
         A_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.003))(A_dense_1)
         A_dropout_1 = Dropout(0.5)(A_dense_2)
-        A_dense_3 = Dense(63, activation='relu')(A_dropout_1)
+        A_dense_3 = Dense(42, activation='relu')(A_dropout_1)
         AString_output = Dense(21, activation='softmax', name='AString')(A_dense_3)
 
 
@@ -194,7 +193,7 @@ class NeuralNetwork:
         D_dense_1 = Dense(128, activation='relu', kernel_regularizer=l2(0.003))(flatten_1)
         D_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.003))(D_dense_1)
         D_dropout_1 = Dropout(0.5)(D_dense_2)
-        D_dense_3 = Dense(63, activation='relu')(D_dropout_1)
+        D_dense_3 = Dense(42, activation='relu')(D_dropout_1)
         DString_output = Dense(21, activation='softmax', name='DString')(D_dense_3)
 
 
@@ -202,7 +201,7 @@ class NeuralNetwork:
         G_dense_1 = Dense(128, activation='relu', kernel_regularizer=l2(0.003))(flatten_1)
         G_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.003))(G_dense_1)
         G_dropout_1 = Dropout(0.5)(G_dense_2)
-        G_dense_3 = Dense(63, activation='relu')(G_dropout_1)
+        G_dense_3 = Dense(42, activation='relu')(G_dropout_1)
         GString_output = Dense(21, activation='softmax', name='GString')(G_dense_3)
 
 
@@ -210,7 +209,7 @@ class NeuralNetwork:
         B_dense_1 = Dense(128, activation='relu', kernel_regularizer=l2(0.003))(flatten_1)
         B_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.003))(B_dense_1)
         B_dropout_1 = Dropout(0.5)(B_dense_2)
-        B_dense_3 = Dense(63, activation='relu')(B_dropout_1)
+        B_dense_3 = Dense(42, activation='relu')(B_dropout_1)
         BString_output = Dense(21, activation='softmax', name='BString')(B_dense_3)
 
 
@@ -218,7 +217,7 @@ class NeuralNetwork:
         e_dense_1 = Dense(128, activation='relu', kernel_regularizer=l2(0.003))(flatten_1)
         e_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.003))(e_dense_1)
         e_dropout_1 = Dropout(0.5)(e_dense_2)
-        e_dense_3 = Dense(63, activation='relu')(e_dropout_1)
+        e_dense_3 = Dense(42, activation='relu')(e_dropout_1)
         eString_output = Dense(21, activation='softmax', name='eString')(e_dense_3)
 
 
@@ -237,7 +236,6 @@ class NeuralNetwork:
         sgd_optimizer = SGD(learning_rate=lr_schedule) #momentum=0.6
         if self.use_momentum:
             sgd_optimizer = SGD(learning_rate=lr_schedule, momentum=self.momentum)
-        # adam_optimizer = Adam(learning_rate=lr_schedule)
 
         model.compile(loss='categorical_crossentropy',
                       optimizer=sgd_optimizer,
@@ -249,30 +247,40 @@ class NeuralNetwork:
         plot_model(self.model, to_file=f"{self.split_folder}{file_name}",
                                   expand_nested=True, show_shapes=True)
 
-    def train(self, load=False):
+    def train(self, load=False, model_path = "", checkpoints=False):
         if load:
-            #self.model = tf.keras.models.load_model("saved/c_3bin_2024-02-20/2_2/model")
+            self.model = tf.keras.models.load_model(model_path)
             pass
         else:
-            self.model.fit(
-                self.training_generator,
-                epochs=self.epochs,
-                use_multiprocessing=True,
-                workers=6
-            )
+            if not checkpoints:
+                self.model.fit(
+                    self.training_generator,
+                    epochs=self.epochs,
+                    use_multiprocessing=True,
+                    workers=6
+                )
+            else:
+                checkpoint_path = self.split_folder + "checkpoints"
+                os.makedirs(checkpoint_path)
+                callback = ModelCheckpoint(filepath=checkpoint_path + "/weights_epoch_{epoch:02d}.h5", save_weights_only=True, verbose=1)
+                self.model.fit(
+                    self.training_generator,
+                    epochs=self.epochs,
+                    use_multiprocessing=True,
+                    workers=6,
+                    callbacks=[callback]
+                )
 
     def save_model(self):
-        #self.model.save_weights(self.split_folder + "weights.h5")
         self.model.save(self.split_folder + "model")
 
     def test(self):
-        self.y_gt = np.empty((len(self.partition["validation"]), 6, 21))
-        self.y_pred = np.empty((len(self.partition["validation"]), 6, 21))
+        self.y_gt = np.empty((len(self.partition["test"]), 6, 21))
+        self.y_pred = np.empty((len(self.partition["test"]), 6, 21))
         index = 0
         for i in range(len(self.validation_generator)):
             X_test, y_gt = self.validation_generator[i]
             y_pred = self.model.predict(X_test, verbose=0)
-
             size = len(y_pred[0])
             for sample_index in range(size):
                 EString_pred = y_pred[0][sample_index]
@@ -298,45 +306,47 @@ class NeuralNetwork:
         np.savez(self.split_folder + "predictions.npz", y_pred=self.y_pred, y_gt=self.y_gt)
 
     def evaluate(self):
-        self.metrics["pp"].append(pitch_precision(self.y_pred, self.y_gt))
-        self.metrics["pr"].append(pitch_recall(self.y_pred, self.y_gt))
-        self.metrics["pf"].append(pitch_f_measure(self.y_pred, self.y_gt))
-        self.metrics["tp"].append(tab_precision(self.y_pred, self.y_gt))
-        self.metrics["tr"].append(tab_recall(self.y_pred, self.y_gt))
-        self.metrics["tf"].append(tab_f_measure(self.y_pred, self.y_gt))
-        self.metrics["tdr"].append(tab_disamb(self.y_pred, self.y_gt))
+        self.metrics["pitch_precision"].append(pitch_precision(self.y_pred, self.y_gt))
+        self.metrics["pitch_recall"].append(pitch_recall(self.y_pred, self.y_gt))
+        self.metrics["pitch_f_score"].append(pitch_f_score(self.y_pred, self.y_gt))
+        self.metrics["tab_precision"].append(tab_precision(self.y_pred, self.y_gt))
+        self.metrics["tab_recall"].append(tab_recall(self.y_pred, self.y_gt))
+        self.metrics["tab_f_score"].append(tab_f_measure(self.y_pred, self.y_gt))
 
     def save_results_csv(self):
-        output = {}
-        for key in self.metrics.keys():
-            if key != "data":
-                vals = self.metrics[key]
-                mean = np.mean(vals)
-                std = np.std(vals)
-                output[key] = vals + [mean, std]
-        # output["data"] =  self.metrics["data"]
-        df = pd.DataFrame.from_dict(output)
+        df = pd.DataFrame.from_dict(self.metrics)
         df.to_csv(self.split_folder + "results.csv")
 
 if __name__ == '__main__':
     configure_gpu()
-    tabcnn = NeuralNetwork(info="L1=0.003 for first 2 dense layers of each string")
-    for fold in range(2,3):
-        print("\nfold " + str(fold))
-        tabcnn.partition_data(data_split=fold)
-        print("building model...")
-        tabcnn.build_model()
-        print("logging model...")
-        tabcnn.log_model()
-        tabcnn.plot_model('model_architecture.png')
-        print("training...")
-        tabcnn.train()
-        print("saving weights...")
-        tabcnn.save_model()
-        print("testing...")
-        tabcnn.test()
-        tabcnn.save_predictions()
-        print("evaluation...")
-        tabcnn.evaluate()
-        print("saving results...")
-        tabcnn.save_results_csv()
+    neural_network = NeuralNetwork(info="L1=0.003 for first 2 dense layers of each string")
+    test_index = 2
+    print("\ntest index " + str(test_index))
+    neural_network.partition_data(data_split=test_index)
+
+    print("building model...")
+    neural_network.build_model()
+
+    print("logging model...")
+    neural_network.log_model()
+
+    print("plotting model...")
+    neural_network.plot_model('model_architecture.png')
+
+    print("training...")
+    neural_network.train(checkpoints=True)
+
+    print("saving weights...")
+    neural_network.save_model()
+
+    print("testing...")
+    neural_network.test()
+
+    print("saving predictions...")
+    neural_network.save_predictions()
+
+    print("evaluation...")
+    neural_network.evaluate()
+
+    print("saving results...")
+    neural_network.save_results_csv()

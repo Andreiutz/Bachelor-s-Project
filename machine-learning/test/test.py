@@ -5,9 +5,9 @@ def test_prediction():
     preprocess_service = PreprocessService()
     prediction_service = PredictionService(preprocess_service)
 
-    f = 'b65db1b1-c16c-457f-aad7-a1b22fbd4d36'
+    f = 'Am_01'
 
-    preprocess_service.archive_file_from_folder(f)
+    #preprocess_service.archive_file_from_folder(f)
     result = prediction_service.predict_strums(f)
 
 

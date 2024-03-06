@@ -1,0 +1,32 @@
+a:
+tab accuracy: 0.6575
+pitch accuracy: 0.7691666666666667
+am:
+tab accuracy: 0.8558333333333333
+pitch accuracy: 0.8558333333333333
+bm:
+tab accuracy: 0.7033333333333334
+pitch accuracy: 0.7083333333333334
+c:
+tab accuracy: 0.7558333333333334
+pitch accuracy: 0.7866666666666666
+d:
+tab accuracy: 0.61
+pitch accuracy: 0.6616666666666666
+dm:
+tab accuracy: 0.3983333333333333
+pitch accuracy: 0.6716666666666666
+e:
+tab accuracy: 0.715
+pitch accuracy: 0.7216666666666667
+em:
+tab accuracy: 0.8908333333333334
+pitch accuracy: 0.8908333333333334
+f:
+tab accuracy: 0.7316666666666667
+pitch accuracy: 0.7333333333333333
+g:
+tab accuracy: 0.625
+pitch accuracy: 0.6441666666666667
+overall tab accuracy: 0.6943333333333334
+overall pitch accuracy: 0.7443333333333333

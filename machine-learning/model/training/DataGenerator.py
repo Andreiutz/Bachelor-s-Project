@@ -6,7 +6,7 @@ class DataGenerator(keras.utils.Sequence):
 
     def __init__(self,
                  list_IDs,
-                 data_path="../../data/archived/GuitarSet/",
+                 data_path="data/archived/GuitarSet/",
                  batch_size=128, shuffle=True,
                  label_dim=(6, 21),
                  con_win_size=9):

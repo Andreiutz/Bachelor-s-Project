@@ -1,7 +1,11 @@
+import sys
+
 import tensorflow as tf
 import os
 import numpy as np
-
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(project_root)
+os.chdir(project_root)
 chord_labels = ["a", "am", "bm", "c", "d", "dm", "e", "em", "f", "g"]
 
 a = [-1, 0, 2, 2, 2, 0]
@@ -31,7 +35,7 @@ chords = {
 }
 
 
-model_folder = "model/training/saved/2024-03-06/2_4"
+model_folder = "model/training/saved/2024-03-12/2_2"
 model_path = f"{model_folder}/model"
 checkpoint_path = f"{model_folder}/checkpoints"
 model = tf.keras.models.load_model(model_path)
@@ -107,7 +111,7 @@ if __name__ == '__main__':
     for file in os.listdir(checkpoint_path):
         print(file)
         with open(log_file_path, 'a') as f:
-            f.write(file)
+            f.write(file + "\n")
         path = os.path.join(checkpoint_path, file)
         model.load_weights(path)
         overall_tab_acc = 0
@@ -124,7 +128,7 @@ if __name__ == '__main__':
         with open(log_file_path, 'a') as file:
             file.write(f"overall tab accuracy: {overall_tab_acc}\noverall pitch accuracy: {overall_pitch_acc}" + '\n')
 
-
+    #
     # overall_tab_acc = 0
     # overall_pitch_acc = 0
     # count = 0

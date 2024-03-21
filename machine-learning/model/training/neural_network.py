@@ -85,7 +85,7 @@ class NeuralNetwork:
         #Values for optimizer
         self.initial_learning_rate = 0.05  # Set your initial learning rate
         self.decay_steps = 3500
-        self.decay_rate = 0.5
+        self.decay_rate = 0.6
         self.use_momentum=False
         self.momentum=0.9
 
@@ -174,59 +174,59 @@ class NeuralNetwork:
 
         conv2d_1 = Conv2D(32, (3,3), activation='relu')(input_layer)
 
-        conv2d_2 = Conv2D(48, (3,3), activation='relu')(conv2d_1)
+        conv2d_2 = Conv2D(64, (3,3), activation='relu')(conv2d_1)
 
         conv2d_3 = Conv2D(64, (3,3), activation='relu')(conv2d_2)
 
         max_pooling_3 = MaxPooling2D(pool_size=(2,2))(conv2d_3)
 
-        dropout_1 = Dropout(0.5)(max_pooling_3)
+        dropout_1 = Dropout(0.4)(max_pooling_3)
 
         flatten_1 = Flatten()(dropout_1)
 
         # EString output
         E_dense_1 = Dense(252, activation='relu', kernel_regularizer=l2(0.003))(flatten_1)
-        E_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.003))(E_dense_1)
-        E_dropout_1 = Dropout(0.25)(E_dense_2)
+        E_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.001))(E_dense_1)
+        E_dropout_1 = Dropout(0.5)(E_dense_2)
         E_dense_3 = Dense(42, activation='relu')(E_dropout_1)
         EString_output = Dense(21, activation='softmax', name='EString')(E_dense_3)
 
         # AString output
         A_dense_1 = Dense(252, activation='relu', kernel_regularizer=l2(0.003))(flatten_1)
-        A_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.003))(A_dense_1)
-        A_dropout_1 = Dropout(0.25)(A_dense_2)
+        A_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.001))(A_dense_1)
+        A_dropout_1 = Dropout(0.4)(A_dense_2)
         A_dense_3 = Dense(42, activation='relu')(A_dropout_1)
         AString_output = Dense(21, activation='softmax', name='AString')(A_dense_3)
 
 
         # DString output
         D_dense_1 = Dense(252, activation='relu', kernel_regularizer=l2(0.003))(flatten_1)
-        D_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.003))(D_dense_1)
-        D_dropout_1 = Dropout(0.25)(D_dense_2)
+        D_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.001))(D_dense_1)
+        D_dropout_1 = Dropout(0.4)(D_dense_2)
         D_dense_3 = Dense(42, activation='relu')(D_dropout_1)
         DString_output = Dense(21, activation='softmax', name='DString')(D_dense_3)
 
 
         # GString output
         G_dense_1 = Dense(252, activation='relu', kernel_regularizer=l2(0.003))(flatten_1)
-        G_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.003))(G_dense_1)
-        G_dropout_1 = Dropout(0.25)(G_dense_2)
+        G_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.001))(G_dense_1)
+        G_dropout_1 = Dropout(0.4)(G_dense_2)
         G_dense_3 = Dense(42, activation='relu')(G_dropout_1)
         GString_output = Dense(21, activation='softmax', name='GString')(G_dense_3)
 
 
         # BString output
         B_dense_1 = Dense(252, activation='relu', kernel_regularizer=l2(0.003))(flatten_1)
-        B_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.003))(B_dense_1)
-        B_dropout_1 = Dropout(0.25)(B_dense_2)
+        B_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.001))(B_dense_1)
+        B_dropout_1 = Dropout(0.4)(B_dense_2)
         B_dense_3 = Dense(42, activation='relu')(B_dropout_1)
         BString_output = Dense(21, activation='softmax', name='BString')(B_dense_3)
 
 
         # eString output
         e_dense_1 = Dense(252, activation='relu', kernel_regularizer=l2(0.003))(flatten_1)
-        e_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.003))(e_dense_1)
-        e_dropout_1 = Dropout(0.25)(e_dense_2)
+        e_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.001))(e_dense_1)
+        e_dropout_1 = Dropout(0.4)(e_dense_2)
         e_dense_3 = Dense(42, activation='relu')(e_dropout_1)
         eString_output = Dense(21, activation='softmax', name='eString')(e_dense_3)
 
@@ -332,7 +332,7 @@ class NeuralNetwork:
 
 if __name__ == '__main__':
     configure_gpu()
-    neural_network = NeuralNetwork(info="L1=0.003 for all strings, all dense layers\n0.3 dropout for all and 0.5 before branches", spanning_octaves=8)
+    neural_network = NeuralNetwork(info="L1=0.003 for first layer, 0.001 for second (dense layers for ech string)\n0.4 dropout everywhere", spanning_octaves=8)
     test_index = 2
     print("\ntest index " + str(test_index))
     neural_network.partition_data(training_index=test_index)

@@ -58,7 +58,7 @@ class PreprocessGenerator:
 
     def correct_numbering(self, n):
         n += 1
-        if n < 0 or n > self.highest_fret:
+        if n < 0 or n > self.highest_fret + 1:
             n = 0
         return n
 
@@ -79,9 +79,9 @@ class PreprocessGenerator:
         jam = jams.load(annotation_file)
         data, _ = librosa.load(audio_file, sr=self.sample_rate)
 
-        self.output["representation"] = np.swapaxes(self.preprocess_audio(data), 0, 1)
+        self.output["spec"] = np.swapaxes(self.preprocess_audio(data), 0, 1)
 
-        frame_indices = range(len(self.output["representation"]))
+        frame_indices = range(len(self.output["spec"]))
         times = librosa.frames_to_time(frame_indices, sr=self.sample_rate, hop_length=self.hop_length)
 
         labels = []
@@ -97,8 +97,8 @@ class PreprocessGenerator:
 
         labels = np.array(labels)
         labels = np.swapaxes(np.squeeze(labels), 0, 1)
-        self.output["labels"] = self.clean_labels(labels)
-        return len(self.output["labels"])
+        self.output["tab"] = self.clean_labels(labels)
+        return len(self.output["tab"])
 
     def save_archive(self, filename):
         np.savez(filename, **self.output)
@@ -121,9 +121,6 @@ class PreprocessGenerator:
 if __name__ == '__main__':
     generator = PreprocessGenerator(audio_path='data/audio/GuitarSet/audio/',
                                     annotation_path='data/audio/GuitarSet/annotation/',
-                                    save_path='data/archived/GuitarSet/5_octaves/',
-                                    octaves=5,
-                                    start_note='C2',
-                                    use_hcqt=True
+                                    save_path='data/archived/GuitarSet/8_octaves/',
                                     )
     generator.compute_data(360) #there are 360 audio files

@@ -189,14 +189,14 @@ class NeuralNetwork:
         E_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.001))(E_dense_1)
         E_dropout_1 = Dropout(0.5)(E_dense_2)
         E_dense_3 = Dense(42, activation='relu')(E_dropout_1)
-        EString_output = Dense(21, activation='softmax', name='EString')(E_dense_3)
+        EString_output = Dense(self.num_classes, activation='softmax', name='EString')(E_dense_3)
 
         # AString output
         A_dense_1 = Dense(252, activation='relu', kernel_regularizer=l2(0.003))(flatten_1)
         A_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.001))(A_dense_1)
         A_dropout_1 = Dropout(0.4)(A_dense_2)
         A_dense_3 = Dense(42, activation='relu')(A_dropout_1)
-        AString_output = Dense(21, activation='softmax', name='AString')(A_dense_3)
+        AString_output = Dense(self.num_classes, activation='softmax', name='AString')(A_dense_3)
 
 
         # DString output
@@ -204,7 +204,7 @@ class NeuralNetwork:
         D_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.001))(D_dense_1)
         D_dropout_1 = Dropout(0.4)(D_dense_2)
         D_dense_3 = Dense(42, activation='relu')(D_dropout_1)
-        DString_output = Dense(21, activation='softmax', name='DString')(D_dense_3)
+        DString_output = Dense(self.num_classes, activation='softmax', name='DString')(D_dense_3)
 
 
         # GString output
@@ -212,7 +212,7 @@ class NeuralNetwork:
         G_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.001))(G_dense_1)
         G_dropout_1 = Dropout(0.4)(G_dense_2)
         G_dense_3 = Dense(42, activation='relu')(G_dropout_1)
-        GString_output = Dense(21, activation='softmax', name='GString')(G_dense_3)
+        GString_output = Dense(self.num_classes, activation='softmax', name='GString')(G_dense_3)
 
 
         # BString output
@@ -220,7 +220,7 @@ class NeuralNetwork:
         B_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.001))(B_dense_1)
         B_dropout_1 = Dropout(0.4)(B_dense_2)
         B_dense_3 = Dense(42, activation='relu')(B_dropout_1)
-        BString_output = Dense(21, activation='softmax', name='BString')(B_dense_3)
+        BString_output = Dense(self.num_classes, activation='softmax', name='BString')(B_dense_3)
 
 
         # eString output
@@ -228,7 +228,7 @@ class NeuralNetwork:
         e_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.001))(e_dense_1)
         e_dropout_1 = Dropout(0.4)(e_dense_2)
         e_dense_3 = Dense(42, activation='relu')(e_dropout_1)
-        eString_output = Dense(21, activation='softmax', name='eString')(e_dense_3)
+        eString_output = Dense(self.num_classes, activation='softmax', name='eString')(e_dense_3)
 
 
         # Creating the model

@@ -12,7 +12,7 @@ class PreprocessGenerator:
                  annotation_path,
                  save_path,
                  sample_rate = 22050,
-                 cqt_bins_per_octave = 36,
+                 bins_per_octave = 36,
                  n_fft = 2048,
                  hop_length = 512,
                  octaves=8,
@@ -26,12 +26,12 @@ class PreprocessGenerator:
         self.octaves = octaves
         self.start_note = start_note
         self.use_hcqt = use_hcqt
-        self.cqt_bins_per_octave = cqt_bins_per_octave
-        self.cqt_bins = self.cqt_bins_per_octave * self.octaves
+        self.bins_per_octave = bins_per_octave
+        self.cqt_bins = self.bins_per_octave * self.octaves
         self.n_fft = n_fft
         self.hop_length = hop_length
 
-        self.string_midi_pitches = [40, 45, 50, 55, 59, 64]
+        self.string_midi_pitches = [40, 45, 50, 55, 59, 64] #midi notes of open strings
         self.highest_fret = 19
         self.num_of_classes = self.highest_fret + 2 # string freely played + muted
 
@@ -45,14 +45,14 @@ class PreprocessGenerator:
                                       hop_length=self.hop_length,
                                       sr=self.sample_rate,
                                       n_bins=self.cqt_bins,
-                                      bins_per_octave=self.cqt_bins_per_octave))
+                                      bins_per_octave=self.bins_per_octave))
         else:
             fmin = librosa.note_to_hz(self.start_note)
             data = np.abs(librosa.cqt(y=audio,
                                       hop_length=self.hop_length,
                                       sr=self.sample_rate,
                                       n_bins=self.cqt_bins,
-                                      bins_per_octave=self.cqt_bins_per_octave,
+                                      bins_per_octave=self.bins_per_octave,
                                       fmin = fmin))
         return data
 
@@ -62,18 +62,18 @@ class PreprocessGenerator:
             n = 0
         return n
 
-    def categorical(self, label):
+    def one_hot_encode(self, label):
         return to_categorical(label, self.num_of_classes)
 
-    def clean_label(self, label):
+    def process_label(self, label):
         label = [self.correct_numbering(n) for n in label]
-        return self.categorical(label)
+        return self.one_hot_encode(label)
 
-    def clean_labels(self, labels):
-        return np.array([self.clean_label(label) for label in labels])
+    def process_labels(self, labels):
+        return np.array([self.process_label(label) for label in labels])
 
 
-    def load_data_for_file(self, filename):
+    def load_data_from_file(self, filename):
         audio_file = self.audio_path + filename + '_mic.wav'
         annotation_file = self.annotation_path + filename + '.jams'
         jam = jams.load(annotation_file)
@@ -97,20 +97,16 @@ class PreprocessGenerator:
 
         labels = np.array(labels)
         labels = np.swapaxes(np.squeeze(labels), 0, 1)
-        self.output["tab"] = self.clean_labels(labels)
+        self.output["tab"] = self.process_labels(labels)
         return len(self.output["tab"])
 
     def save_archive(self, filename):
         np.savez(filename, **self.output)
 
-    def get_nth_filename(self, n):
-        filenames = np.sort(np.array(os.listdir(self.annotation_path)))
-        return filenames[n][:-5]
-
-    def compute_data(self, n):
-        for i in range(n):
-            filename = self.get_nth_filename(i)
-            num_frames = self.load_data_for_file(filename)
+    def preprocess_data(self):
+        for annotation_file in os.listdir(self.annotation_path):
+            filename = annotation_file[:-5]
+            num_frames = self.load_data_from_file(filename)
             print("done: " + filename + ", " + str(num_frames) + " frames")
             save_path = self.save_path
             if not os.path.exists(save_path):
@@ -121,6 +117,9 @@ class PreprocessGenerator:
 if __name__ == '__main__':
     generator = PreprocessGenerator(audio_path='data/audio/GuitarSet/audio/',
                                     annotation_path='data/audio/GuitarSet/annotation/',
-                                    save_path='data/archived/GuitarSet/8_octaves/',
+                                    save_path='data/archived/GuitarSet/5_octaves/',
+                                    octaves=5,
+                                    use_hcqt=True,
+                                    start_note='C2'
                                     )
-    generator.compute_data(360) #there are 360 audio files
+    generator.preprocess_data()

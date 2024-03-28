@@ -1,7 +1,4 @@
 import numpy as np
-import keras
-
-#todo refactor all to accept another input format
 
 def tab_to_pitch(tab):
     result = np.zeros(44)
@@ -16,15 +13,22 @@ def tab_to_pitch(tab):
 
 def tab_without_closed_class(tab):
     tab_arr = np.zeros((6, 20))
-    for string_num in range(len(tab)):
-        fret_vector = tab[string_num]
-        fret_class = np.argmax(fret_vector, -1)
+    for string_index in range(len(tab)):
+        fret_vector = tab[string_index]
+        fret_index = np.argmax(fret_vector, -1)
         # 0 means that the string is closed
-        if fret_class > 0:
-            fret_num = fret_class - 1
-            tab_arr[string_num][fret_num] = 1
+        if fret_index > 0:
+            fret_num = fret_index - 1
+            tab_arr[string_index][fret_num] = 1
     return tab_arr
 
+def clean_tab(tab):
+    tab_arr = np.zeros((6, 21))
+    for string_index in range(len(tab)):
+        fret_vector = tab[string_index]
+        fret_index = np.argmax(fret_vector, -1)
+        tab_arr[string_index][fret_index] = 1
+    return tab_arr
 
 def pitch_precision(predictions, ground_truths):
     pitch_predictions = np.array(
@@ -49,7 +53,6 @@ def pitch_recall(predictions, ground_truths):
     total_ground_truth_pitches = np.sum(pitch_ground_truths.flatten())
     return (1.0 * total_correct_pitches) / total_ground_truth_pitches
 
-
 def pitch_f_score(predictions, ground_truths):
     precision = pitch_precision(predictions, ground_truths)
     recall = pitch_recall(predictions, ground_truths)
@@ -70,14 +73,28 @@ def tab_precision(predictions, ground_truths):
     return (1.0 * numerator) / denominator
 
 
-def tab_recall(pred, gt):
+def tab_recall(predictions, ground_truths):
     # get rid of "closed" class, as we only want to count positives
-    tab_pred = np.array([tab_without_closed_class(p) for p in pred])
-    tab_gt = np.array([tab_without_closed_class(g) for g in gt])
+    tab_pred = np.array([
+        tab_without_closed_class(pred) for pred in predictions]
+    )
+    tab_gt = np.array(
+        [tab_without_closed_class(gt) for gt in ground_truths]
+    )
+
     numerator = np.sum(np.multiply(tab_pred, tab_gt).flatten())
     denominator = np.sum(tab_gt.flatten())
     return (1.0 * numerator) / denominator
 
+def tab_accuracy(predictions, ground_truths):
+    tab_pred = np.array([
+        clean_tab(tab) for tab in predictions
+    ])
+
+    numerator = np.sum(np.multiply(tab_pred, ground_truths).flatten())
+    denominator = np.sum(tab_pred.flatten())
+    # return (1.0 * numerator) / (tab_pred.shape[0] * tab_pred.shape[1])
+    return (1.0 * numerator) / denominator
 
 def tab_f_measure(pred, gt):
     p = tab_precision(pred, gt)

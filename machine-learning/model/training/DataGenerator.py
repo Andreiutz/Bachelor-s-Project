@@ -7,8 +7,10 @@ class DataGenerator(keras.utils.Sequence):
     def __init__(self,
                  list_IDs,
                  data_path="data/archived/GuitarSet/",
-                 batch_size=128, shuffle=True,
-                 con_win_size=9):
+                 batch_size=128,
+                 shuffle=True,
+                 con_win_size=9
+                 ):
 
         self.list_IDs = list_IDs
         self.data_path = data_path
@@ -78,13 +80,10 @@ class DataGenerator(keras.utils.Sequence):
         }
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
-            # determine filename
             data_dir = self.data_path
             filename = "_".join(ID.split("_")[:-1]) + ".npz"
             frame_idx = int(ID.split("_")[-1])
 
-            # load a context window centered around the frame index
-            #todo test
             loaded = np.load(data_dir + filename)
 
             original_data = loaded["spec"]
@@ -94,7 +93,6 @@ class DataGenerator(keras.utils.Sequence):
             repeated_last_row = np.repeat(last_row, self.halfwin, axis=0)
             full_x = np.concatenate([repeated_first_row, original_data, repeated_last_row], axis=0)
 
-            #full_x = np.pad(loaded["repr"], [(self.halfwin, self.halfwin), (0, 0)], mode='constant')
             sample_x = full_x[frame_idx: frame_idx + self.con_win_size]
             self.batch_input.append(np.expand_dims(np.swapaxes(sample_x, 0, 1), -1))
 

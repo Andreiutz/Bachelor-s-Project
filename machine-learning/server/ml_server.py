@@ -10,10 +10,6 @@ from fastapi.responses import JSONResponse
 from server.repository.AudioFileRepository import AudioFileRepository
 from server.service.AudioFileService import AudioFileService
 
-#todo
-# tune onset detection
-# improve model
-# improve strum by batch (ignore silence)
 
 from server.service.PredictionService import PredictionService
 from server.service.PreprocessService import PreprocessService

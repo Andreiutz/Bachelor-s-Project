@@ -35,7 +35,7 @@ chords = {
 }
 
 
-model_folder = "model/training/saved/2024-03-12/2_2"
+model_folder = "model/training/saved/2024-03-26/train_80_20_1_8_octaves"
 model_path = f"{model_folder}/model"
 checkpoint_path = f"{model_folder}/checkpoints"
 model = tf.keras.models.load_model(model_path)
@@ -108,37 +108,37 @@ def test_folder(folder_name):
     return tab_acc, pitch_acc
 
 if __name__ == '__main__':
-    for file in os.listdir(checkpoint_path):
-        print(file)
-        with open(log_file_path, 'a') as f:
-            f.write(file + "\n")
-        path = os.path.join(checkpoint_path, file)
-        model.load_weights(path)
-        overall_tab_acc = 0
-        overall_pitch_acc = 0
-        count = 0
-        for label in chord_labels:
-            count += 1
-            tab_acc, pitch_acc = test_folder(label)
-            overall_tab_acc += tab_acc
-            overall_pitch_acc += pitch_acc
-        overall_tab_acc /= count
-        overall_pitch_acc /= count
-        print(f"overall tab accuracy: {overall_tab_acc}\noverall pitch accuracy: {overall_pitch_acc}" + '\n')
-        with open(log_file_path, 'a') as file:
-            file.write(f"overall tab accuracy: {overall_tab_acc}\noverall pitch accuracy: {overall_pitch_acc}" + '\n')
+    # for file in os.listdir(checkpoint_path):
+    #     print(file)
+    #     with open(log_file_path, 'a') as f:
+    #         f.write(file + "\n")
+    #     path = os.path.join(checkpoint_path, file)
+    #     model.load_weights(path)
+    #     overall_tab_acc = 0
+    #     overall_pitch_acc = 0
+    #     count = 0
+    #     for label in chord_labels:
+    #         count += 1
+    #         tab_acc, pitch_acc = test_folder(label)
+    #         overall_tab_acc += tab_acc
+    #         overall_pitch_acc += pitch_acc
+    #     overall_tab_acc /= count
+    #     overall_pitch_acc /= count
+    #     print(f"overall tab accuracy: {overall_tab_acc}\noverall pitch accuracy: {overall_pitch_acc}" + '\n')
+    #     with open(log_file_path, 'a') as file:
+    #         file.write(f"overall tab accuracy: {overall_tab_acc}\noverall pitch accuracy: {overall_pitch_acc}" + '\n')
 
     #
-    # overall_tab_acc = 0
-    # overall_pitch_acc = 0
-    # count = 0
-    # for label in chord_labels:
-    #     count += 1
-    #     tab_acc, pitch_acc = test_folder(label)
-    #     overall_tab_acc += tab_acc
-    #     overall_pitch_acc += pitch_acc
-    # overall_tab_acc /= count
-    # overall_pitch_acc /= count
-    # print(f"overall tab accuracy: {overall_tab_acc}\noverall pitch accuracy: {overall_pitch_acc}" + '\n')
-    # with open(log_file_path, 'a') as file:
-    #     file.write(f"overall tab accuracy: {overall_tab_acc}\noverall pitch accuracy: {overall_pitch_acc}" + '\n')
+    overall_tab_acc = 0
+    overall_pitch_acc = 0
+    count = 0
+    for label in chord_labels:
+        count += 1
+        tab_acc, pitch_acc = test_folder(label)
+        overall_tab_acc += tab_acc
+        overall_pitch_acc += pitch_acc
+    overall_tab_acc /= count
+    overall_pitch_acc /= count
+    print(f"overall tab accuracy: {overall_tab_acc}\noverall pitch accuracy: {overall_pitch_acc}" + '\n')
+    with open(log_file_path, 'a') as file:
+        file.write(f"overall tab accuracy: {overall_tab_acc}\noverall pitch accuracy: {overall_pitch_acc}" + '\n')

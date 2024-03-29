@@ -12,7 +12,7 @@ class PredictionService:
         self.__preprocess_service = preprocess_service
         self.bins_per_octave = 36
         self.con_win_size = 9
-        self.model_path = "model/training/saved/2024-03-07/2_1/model/"
+        self.model_path = "model/training/saved/2024-03-26/train_80_20_1_8_octaves/model/"
         self.model = tf.keras.models.load_model(self.model_path)
 
     # uses onset detection to determine each strum and computes the average for each interval

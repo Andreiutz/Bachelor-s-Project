@@ -26,7 +26,6 @@ warnings.filterwarnings('ignore')
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(project_root)
 os.chdir(project_root)
-print(project_root)
 
 def configure_gpu():
     gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -84,7 +83,7 @@ class NeuralNetwork:
 
         #Values for optimizer
         self.initial_learning_rate = 0.05  # Set your initial learning rate
-        self.decay_steps = 3500
+        self.decay_steps = 4000
         self.decay_rate = 0.6
         self.use_momentum=False
         self.momentum=0.9
@@ -108,18 +107,18 @@ class NeuralNetwork:
 
         return count
 
-    def partition_data(self, partition=True, training_index=-1, folder_name=""):
-        if training_index >= 0:
-            self.training_index = training_index
+    def split_data(self, partition=True, testing_index=-1, folder_name="", test_distribution=2):
+        if testing_index >= 0:
+            self.training_index = testing_index
         else:
             self.training_index = folder_name
         self.partition = {}
         self.partition["train"] = []
         self.partition["test"] = []
-        if training_index >= 0:
+        if testing_index >= 0:
             for ID in self.list_IDs:
                 guitarist = int(ID.split("_")[0])
-                if guitarist == training_index:
+                if guitarist == testing_index:
                     self.partition["test"].append(ID)
                 else:
                     self.partition["train"].append(ID)
@@ -127,7 +126,7 @@ class NeuralNetwork:
             if partition:
                 for ID in self.list_IDs:
                     chance = random.randint(0, 10)
-                    if chance < 1:
+                    if chance < test_distribution:
                         self.partition["test"].append(ID)
                     else:
                         self.partition["train"].append(ID)
@@ -180,54 +179,54 @@ class NeuralNetwork:
 
         max_pooling_3 = MaxPooling2D(pool_size=(2,2))(conv2d_3)
 
-        dropout_1 = Dropout(0.4)(max_pooling_3)
+        dropout_1 = Dropout(0.5)(max_pooling_3)
 
         flatten_1 = Flatten()(dropout_1)
 
         # EString output
         E_dense_1 = Dense(252, activation='relu', kernel_regularizer=l2(0.003))(flatten_1)
-        E_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.001))(E_dense_1)
+        E_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.003))(E_dense_1)
         E_dropout_1 = Dropout(0.5)(E_dense_2)
-        E_dense_3 = Dense(42, activation='relu')(E_dropout_1)
+        E_dense_3 = Dense(63, activation='relu')(E_dropout_1)
         EString_output = Dense(self.num_classes, activation='softmax', name='EString')(E_dense_3)
 
         # AString output
         A_dense_1 = Dense(252, activation='relu', kernel_regularizer=l2(0.003))(flatten_1)
-        A_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.001))(A_dense_1)
-        A_dropout_1 = Dropout(0.4)(A_dense_2)
-        A_dense_3 = Dense(42, activation='relu')(A_dropout_1)
+        A_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.003))(A_dense_1)
+        A_dropout_1 = Dropout(0.5)(A_dense_2)
+        A_dense_3 = Dense(63, activation='relu')(A_dropout_1)
         AString_output = Dense(self.num_classes, activation='softmax', name='AString')(A_dense_3)
 
 
         # DString output
         D_dense_1 = Dense(252, activation='relu', kernel_regularizer=l2(0.003))(flatten_1)
-        D_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.001))(D_dense_1)
-        D_dropout_1 = Dropout(0.4)(D_dense_2)
-        D_dense_3 = Dense(42, activation='relu')(D_dropout_1)
+        D_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.003))(D_dense_1)
+        D_dropout_1 = Dropout(0.5)(D_dense_2)
+        D_dense_3 = Dense(63, activation='relu')(D_dropout_1)
         DString_output = Dense(self.num_classes, activation='softmax', name='DString')(D_dense_3)
 
 
         # GString output
         G_dense_1 = Dense(252, activation='relu', kernel_regularizer=l2(0.003))(flatten_1)
-        G_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.001))(G_dense_1)
-        G_dropout_1 = Dropout(0.4)(G_dense_2)
-        G_dense_3 = Dense(42, activation='relu')(G_dropout_1)
+        G_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.003))(G_dense_1)
+        G_dropout_1 = Dropout(0.5)(G_dense_2)
+        G_dense_3 = Dense(63, activation='relu')(G_dropout_1)
         GString_output = Dense(self.num_classes, activation='softmax', name='GString')(G_dense_3)
 
 
         # BString output
         B_dense_1 = Dense(252, activation='relu', kernel_regularizer=l2(0.003))(flatten_1)
-        B_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.001))(B_dense_1)
-        B_dropout_1 = Dropout(0.4)(B_dense_2)
-        B_dense_3 = Dense(42, activation='relu')(B_dropout_1)
+        B_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.003))(B_dense_1)
+        B_dropout_1 = Dropout(0.5)(B_dense_2)
+        B_dense_3 = Dense(63, activation='relu')(B_dropout_1)
         BString_output = Dense(self.num_classes, activation='softmax', name='BString')(B_dense_3)
 
 
         # eString output
         e_dense_1 = Dense(252, activation='relu', kernel_regularizer=l2(0.003))(flatten_1)
-        e_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.001))(e_dense_1)
-        e_dropout_1 = Dropout(0.4)(e_dense_2)
-        e_dense_3 = Dense(42, activation='relu')(e_dropout_1)
+        e_dense_2 = Dense(126, activation='relu', kernel_regularizer=l2(0.003))(e_dense_1)
+        e_dropout_1 = Dropout(0.5)(e_dense_2)
+        e_dense_3 = Dense(63, activation='relu')(e_dropout_1)
         eString_output = Dense(self.num_classes, activation='softmax', name='eString')(e_dense_3)
 
 
@@ -332,34 +331,34 @@ class NeuralNetwork:
 
 if __name__ == '__main__':
     configure_gpu()
-    neural_network = NeuralNetwork(info="L1=0.003 for first layer, 0.001 for second (dense layers for ech string)\n0.4 dropout everywhere", spanning_octaves=8)
+    neural_network = NeuralNetwork(info="L1=0.003 for first 2 layers\n0.5 dropout all", spanning_octaves=8)
     test_index = 2
-    print("\ntest index " + str(test_index))
-    neural_network.partition_data(training_index=test_index)
+    print("\ntest guitarist index: " + str(test_index))
+    neural_network.split_data(testing_index=test_index)
 
-    print("building model...")
     neural_network.build_model()
+    print("model built")
 
-    print("plotting model...")
     neural_network.plot_model('model_architecture.png')
+    print("model plot saved")
 
-    print("training...")
-    neural_network.train(checkpoints=True, load=False, model_path="model/training/saved/2024-03-13/2_1_5_octaves/model", epoch=6)
+    print("training started...")
+    neural_network.train(checkpoints=True)
 
-    print("saving weights...")
     neural_network.save_model()
+    print("weights saved")
 
     print("testing...")
     neural_network.test()
 
-    print("saving predictions...")
     neural_network.save_predictions()
+    print("saved predictions")
 
-    print("evaluation...")
     neural_network.evaluate()
+    print("saved metrics")
 
-    print("saving results...")
     neural_network.save_results_csv()
+    print("saved results")
 
-    print("logging model...")
     neural_network.log_model_details()
+    print("logged model")

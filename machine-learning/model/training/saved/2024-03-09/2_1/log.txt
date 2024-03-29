@@ -1,0 +1,15 @@
+
+batch_size: 128
+epochs: 6
+bins per octave: 36
+use momentum: False
+momentum value: 0.9
+data_path: data/archived/
+con_win_size: 9
+id_file: id_22050.csv
+initial learning rate: 0.01
+decay steps: 4000
+decay rate: 0.7
+staircase: True
+other info: L1=0.01 for first 2 dense layers of E,A,D,G strings, 0.03 for B,e
+0.5 dropout for first 4, 0.3 for last 2

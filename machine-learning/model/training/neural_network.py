@@ -332,7 +332,7 @@ class NeuralNetwork:
 if __name__ == '__main__':
     configure_gpu()
     neural_network = NeuralNetwork(info="L1=0.003 for first 2 layers\n0.5 dropout all", spanning_octaves=8)
-    test_index = 2
+    test_index = 0
     print("\ntest guitarist index: " + str(test_index))
     neural_network.split_data(testing_index=test_index)
 
@@ -348,7 +348,7 @@ if __name__ == '__main__':
     neural_network.save_model()
     print("weights saved")
 
-    print("testing...")
+    print("statistics...")
     neural_network.test()
 
     neural_network.save_predictions()

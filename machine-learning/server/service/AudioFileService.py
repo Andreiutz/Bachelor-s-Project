@@ -13,18 +13,18 @@ class AudioFileService:
         self.__repository = repository
 
 
-    def persist_audio_file(self, file : UploadFile, user_id : str):
+    def persist_audio_file(self, file : UploadFile):
         if not file.filename.endswith('.wav'):
             raise InvalidFileFormatException('Invalid file format')
 
         unique_id = str(uuid.uuid4())
-        unique_file_name = f"{unique_id}.wav"
         original_file_name = file.filename.replace('.wav', '')
         date_posted = datetime.now()
-        audio_file = AudioFile(audio_id=unique_id, audio_name=original_file_name, user_id=user_id, date_posted = date_posted)
+        audio_file = AudioFile(audio_id=unique_id, audio_name=original_file_name, last_edited= date_posted)
 
+        os.mkdir(f"../data/audio/{unique_id}/")
 
-        with open(os.path.join("../data/audio/wav_files/", unique_file_name), 'wb') as out_file:
+        with open(f"../data/audio/{unique_id}/audio.wav", 'wb') as out_file:
             out_file.write(file.file.read())
 
         self.__repository.create_audio_file(audio_file=audio_file)

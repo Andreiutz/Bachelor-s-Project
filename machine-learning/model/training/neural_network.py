@@ -1,43 +1,20 @@
 import sys
-
 import tensorflow as tf
 import os
 import datetime
 import pandas as pd
 import random
-import numpy as np
+import json
 from DataGenerator import DataGenerator
 from keras.models import Model
-from keras.layers import Dense, Dropout, Flatten, Reshape, Activation, Input
-from keras.layers import Conv2D, MaxPooling2D, Conv1D, Lambda
-from keras import backend as K
+from keras.layers import Dense, Dropout, Flatten, Input
+from keras.layers import Conv2D, MaxPooling2D
 from metrics import *
 from tensorflow.keras.optimizers import SGD, Adam
 from tensorflow.keras.optimizers.schedules import ExponentialDecay
-# from keras.optimizers import SGD
-# from keras.optimizers.schedules import ExponentialDecay
 from keras.regularizers import l1, l2, l1_l2
 from tensorflow.keras.utils import plot_model
 from keras.callbacks import ModelCheckpoint
-
-import warnings
-warnings.filterwarnings('ignore')
-
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.append(project_root)
-os.chdir(project_root)
-
-def configure_gpu():
-    gpus = tf.config.experimental.list_physical_devices('GPU')
-    if gpus:
-        try:
-            print(gpus)
-            for gpu in gpus:
-                tf.config.experimental.set_memory_growth(device=gpu, enable=True)
-        except RuntimeError as e:
-            print(e)
-    else:
-        print('no gpus')
 
 class NeuralNetwork:
 
@@ -82,9 +59,10 @@ class NeuralNetwork:
         self.num_strings = 6
 
         #Values for optimizer
-        self.initial_learning_rate = 0.05  # Set your initial learning rate
-        self.decay_steps = 4000
-        self.decay_rate = 0.6
+        self.initial_learning_rate = 0.1  # Set your initial learning rate
+        self.decay_steps = 3000
+        self.decay_rate = 0.5
+
         self.use_momentum=False
         self.momentum=0.9
 
@@ -96,22 +74,11 @@ class NeuralNetwork:
         csv_file = self.data_path + self.id_file
         self.list_IDs = list(pd.read_csv(csv_file, header=None)[0])
 
-    def __get_number_of_attempts(self, folder_path, fold_index):
-        if not os.path.isdir(folder_path):
-            raise ValueError(f"The provided folder path '{folder_path}' is not a valid directory.")
-
-        count = 0
-        for folder in os.listdir(folder_path):
-            if folder.startswith(str(fold_index)) and os.path.isdir(os.path.join(folder_path, folder)):
-                count += 1
-
-        return count
-
-    def split_data(self, partition=True, testing_index=-1, folder_name="", test_distribution=2):
-        if testing_index >= 0:
+    def split_data(self, testing_index):
+        if testing_index >= 0 and testing_index < 6:
             self.training_index = testing_index
         else:
-            self.training_index = folder_name
+            raise "Invalid testing index"
         self.partition = {}
         self.partition["train"] = []
         self.partition["test"] = []
@@ -122,17 +89,10 @@ class NeuralNetwork:
                     self.partition["test"].append(ID)
                 else:
                     self.partition["train"].append(ID)
-        else:
-            if partition:
-                for ID in self.list_IDs:
-                    chance = random.randint(0, 10)
-                    if chance < test_distribution:
-                        self.partition["test"].append(ID)
-                    else:
-                        self.partition["train"].append(ID)
-            else:
-                for ID in self.list_IDs:
-                    self.partition["train"].append(ID)
+
+        self.current_training_folder = self.save_folder + str(self.training_index) + "_" + str(self.__get_number_of_attempts(self.save_folder, self.training_index) + 1) + "_" + str(self.spanning_octaves) + "_octaves" + "/"
+        if not os.path.exists(self.current_training_folder):
+            os.makedirs(self.current_training_folder)
 
         self.training_generator = DataGenerator(self.partition["train"],
                                                 batch_size=self.batch_size,
@@ -145,10 +105,6 @@ class NeuralNetwork:
                                                   data_path=f"data/archived/GuitarSet/{self.spanning_octaves}_octaves/",
                                                   shuffle=False,
                                                   con_win_size=self.con_win_size)
-
-        self.current_training_folder = self.save_folder + str(self.training_index) + "_" + str(self.__get_number_of_attempts(self.save_folder, self.training_index) + 1) + "_" + str(self.spanning_octaves) + "_octaves" + "/"
-        if not os.path.exists(self.current_training_folder):
-            os.makedirs(self.current_training_folder)
 
 
     def log_model_details(self):
@@ -170,17 +126,11 @@ class NeuralNetwork:
 
     def build_model(self):
         input_layer = Input(self.input_shape)
-
         conv2d_1 = Conv2D(32, (3,3), activation='relu')(input_layer)
-
         conv2d_2 = Conv2D(64, (3,3), activation='relu')(conv2d_1)
-
         conv2d_3 = Conv2D(64, (3,3), activation='relu')(conv2d_2)
-
         max_pooling_3 = MaxPooling2D(pool_size=(2,2))(conv2d_3)
-
         dropout_1 = Dropout(0.5)(max_pooling_3)
-
         flatten_1 = Flatten()(dropout_1)
 
         # EString output
@@ -242,13 +192,13 @@ class NeuralNetwork:
             decay_rate=self.decay_rate,
             staircase=self.staircase)
 
-        sgd_optimizer = SGD(learning_rate=lr_schedule) #momentum=0.6
+        sgd_optimizer = SGD(learning_rate=lr_schedule)
         if self.use_momentum:
             sgd_optimizer = SGD(learning_rate=lr_schedule, momentum=self.momentum)
 
         model.compile(loss='categorical_crossentropy',
                       optimizer=sgd_optimizer,
-                      metrics=['accuracy'])
+                      metrics=['precision'])
 
         self.model = model
 
@@ -328,37 +278,16 @@ class NeuralNetwork:
     def save_results_csv(self):
         df = pd.DataFrame.from_dict(self.metrics)
         df.to_csv(self.current_training_folder + "results.csv")
+        with open(self.current_training_folder + 'metrics.json', 'w') as file:
+            json.dump(self.metrics, file, indent=4)
 
-if __name__ == '__main__':
-    configure_gpu()
-    neural_network = NeuralNetwork(info="L1=0.003 for first 2 layers\n0.5 dropout all", spanning_octaves=8)
-    test_index = 0
-    print("\ntest guitarist index: " + str(test_index))
-    neural_network.split_data(testing_index=test_index)
+    def __get_number_of_attempts(self, folder_path, fold_index):
+        if not os.path.isdir(folder_path):
+            raise ValueError(f"The provided folder path '{folder_path}' is not a valid directory.")
 
-    neural_network.build_model()
-    print("model built")
+        count = 0
+        for folder in os.listdir(folder_path):
+            if folder.startswith(str(fold_index)) and os.path.isdir(os.path.join(folder_path, folder)):
+                count += 1
 
-    neural_network.plot_model('model_architecture.png')
-    print("model plot saved")
-
-    print("training started...")
-    neural_network.train(checkpoints=True)
-
-    neural_network.save_model()
-    print("weights saved")
-
-    print("statistics...")
-    neural_network.test()
-
-    neural_network.save_predictions()
-    print("saved predictions")
-
-    neural_network.evaluate()
-    print("saved metrics")
-
-    neural_network.save_results_csv()
-    print("saved results")
-
-    neural_network.log_model_details()
-    print("logged model")
+        return count

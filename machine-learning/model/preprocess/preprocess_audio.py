@@ -13,7 +13,6 @@ class PreprocessGenerator:
                  save_path,
                  sample_rate = 22050,
                  bins_per_octave = 36,
-                 n_fft = 2048,
                  hop_length = 512,
                  octaves=8,
                  start_note='',
@@ -28,7 +27,6 @@ class PreprocessGenerator:
         self.use_hcqt = use_hcqt
         self.bins_per_octave = bins_per_octave
         self.cqt_bins = self.bins_per_octave * self.octaves
-        self.n_fft = n_fft
         self.hop_length = hop_length
 
         self.string_midi_pitches = [40, 45, 50, 55, 59, 64] #midi notes of open strings

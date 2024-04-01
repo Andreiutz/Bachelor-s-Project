@@ -1,1 +1,0 @@
-PROJECT_ROOT = 'D:\\Studies\\UBB\\Licenta\\project'

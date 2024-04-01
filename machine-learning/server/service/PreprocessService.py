@@ -22,18 +22,10 @@ class PreprocessService:
         self.cqt_n_bins = cqt_n_bins_per_octave * 8 # create cqt image from 8 octaves
         self.hop_length = hop_length
 
-    def preprocess_audio(self, file : UploadFile) -> str:
+    def preprocess_audio(self, file : UploadFile, folder_name : str):
         if not file.filename.endswith('.wav'):
             raise InvalidFileFormatException('Invalid file format')
-        folder_name = file.filename.replace('.wav', '')
 
-        y, sr = self.__read_audio_from_file(file)
-
-        directory_path = f"../data/audio/{folder_name}"
-        if not os.path.exists(directory_path):
-            os.makedirs(directory_path)
-
-        write(f"../data/audio/{folder_name}/audio.wav", sr, y)
         # archive files
         archive_path = f"../data/archived/{folder_name}"
         if not os.path.exists(archive_path):
@@ -41,7 +33,6 @@ class PreprocessService:
         #archive full audio
         self.__archive_file(f"../data/audio/{folder_name}/audio.wav",
                             f"../data/archived/{folder_name}/audio.npz")
-        return folder_name
 
     def archive_file_from_folder(self, audio_folder_path : str):
         archive_path = f"../data/archived/{audio_folder_path}"

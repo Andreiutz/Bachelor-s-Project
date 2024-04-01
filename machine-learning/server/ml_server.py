@@ -29,13 +29,6 @@ audioFileService = AudioFileService(repository=repository)
 preprocessService = PreprocessService()
 predictionService = PredictionService(preprocess_service=preprocessService)
 
-@app.post("/upload")
-def upload_file(file: UploadFile = File(...)):
-    try:
-        folder_name = preprocessService.preprocess_audio(file)
-        return JSONResponse(status_code=200, content={"message": f"File uploaded successfully in folder {folder_name}"})
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
 
 @app.get("/predict")
 def predict_cached_audio(name: str):
@@ -50,9 +43,25 @@ def predict_cached_audio(name: str):
 @app.post("/predict")
 def predict_audio(file: UploadFile = File(...)):
     try:
-        folder_name = preprocessService.preprocess_audio(file)
-        prediction = predictionService.predict_strums(folder_name)
+        audio_file = audioFileService.persist_audio_file(file)
+        preprocessService.preprocess_audio(file, audio_file.get_audio_id())
+        prediction = predictionService.predict_all(audio_file.get_audio_id())
         return JSONResponse(status_code=200, content=prediction)
+    except Exception as e:
+        return HTTPException(status_code=400, detail=str(e))
+
+@app.get("/songs")
+def get_audio_list():
+    try:
+        audio_files = repository.get_all_audio_files()
+        return JSONResponse(status_code=200, content=[
+            {
+                "id" : a.get_audio_id(),
+                "name" : a.get_audio_name(),
+                "last_edited" : a.get_last_edited().isoformat()
+            }
+            for a in audio_files
+        ])
     except Exception as e:
         return HTTPException(status_code=400, detail=str(e))
 

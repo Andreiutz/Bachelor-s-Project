@@ -25,10 +25,12 @@ def configure_gpu():
 
 if __name__ == '__main__':
     configure_gpu()
-    neural_network = NeuralNetwork(info="L1=0.003 for first 2 layers\n0.5 dropout all", spanning_octaves=8)
-    test_index = 2
+    neural_network = NeuralNetwork(spanning_octaves=8)
+
+    test_index = 1
     print("\ntest guitarist index: " + str(test_index))
     neural_network.split_data(testing_index=test_index)
+    #neural_network.split_data(file_train_percent=83, folder_name="train_83p")
 
     neural_network.build_model()
     print("model built")

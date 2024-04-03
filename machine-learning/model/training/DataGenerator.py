@@ -9,15 +9,15 @@ class DataGenerator(keras.utils.Sequence):
                  data_path="data/archived/GuitarSet/",
                  batch_size=128,
                  shuffle=True,
-                 con_win_size=9
+                 frame_size=9
                  ):
 
         self.list_IDs = list_IDs
         self.data_path = data_path
         self.batch_size = batch_size
         self.shuffle = shuffle
-        self.con_win_size = con_win_size
-        self.halfwin = con_win_size // 2
+        self.frame_size = frame_size
+        self.half_frame_size = frame_size // 2
 
         self.batch_input = []
         self.batch_output = {
@@ -89,11 +89,11 @@ class DataGenerator(keras.utils.Sequence):
             original_data = loaded["spec"]
             first_row = original_data[0, :].reshape(1, -1)
             last_row = original_data[-1, :].reshape(1, -1)
-            repeated_first_row = np.repeat(first_row, self.halfwin, axis=0)
-            repeated_last_row = np.repeat(last_row, self.halfwin, axis=0)
+            repeated_first_row = np.repeat(first_row, self.half_frame_size, axis=0)
+            repeated_last_row = np.repeat(last_row, self.half_frame_size, axis=0)
             full_x = np.concatenate([repeated_first_row, original_data, repeated_last_row], axis=0)
 
-            sample_x = full_x[frame_idx: frame_idx + self.con_win_size]
+            sample_x = full_x[frame_idx: frame_idx + self.frame_size]
             self.batch_input.append(np.expand_dims(np.swapaxes(sample_x, 0, 1), -1))
 
             # Store label

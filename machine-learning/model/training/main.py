@@ -27,7 +27,7 @@ if __name__ == '__main__':
     configure_gpu()
     neural_network = NeuralNetwork(spanning_octaves=8)
 
-    test_index = 1
+    test_index = 2
     print("\ntest guitarist index: " + str(test_index))
     neural_network.split_data(testing_index=test_index)
     #neural_network.split_data(file_train_percent=83, folder_name="train_83p")

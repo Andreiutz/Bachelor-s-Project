@@ -5,7 +5,7 @@ import datetime
 import pandas as pd
 import random
 import json
-from DataGenerator import DataGenerator
+from DataSequence import DataSequence
 from keras.models import Model
 from keras.layers import Dense, Dropout, Flatten, Input
 from keras.layers import Conv2D, MaxPooling2D
@@ -61,12 +61,6 @@ class NeuralNetwork:
         self.testing_index = -1
 
         self.metrics = {}
-        self.metrics["pitch_precision"] = []
-        self.metrics["pitch_recall"] = []
-        self.metrics["pitch_f_score"] = []
-        self.metrics["tab_precision"] = []
-        self.metrics["tab_recall"] = []
-        self.metrics["tab_f_score"] = []
 
 
         self.save_folder = self.save_path + datetime.datetime.now().strftime("%Y-%m-%d") + "/"
@@ -131,17 +125,17 @@ class NeuralNetwork:
         if not os.path.exists(self.current_training_folder):
             os.makedirs(self.current_training_folder)
 
-        self.training_generator = DataGenerator(self.partition["train"],
-                                                batch_size=self.batch_size,
-                                                data_path=f"data/archived/GuitarSet/{self.spanning_octaves}_octaves/",
-                                                shuffle=True,
-                                                frame_size=self.frame_size)
+        self.training_sequence = DataSequence(self.partition["train"],
+                                              batch_size=self.batch_size,
+                                              data_path=f"data/archived/GuitarSet/{self.spanning_octaves}_octaves/",
+                                              shuffle=True,
+                                              frame_size=self.frame_size)
 
-        self.validation_generator = DataGenerator(self.partition["test"],
-                                                  batch_size=400,  #to modify
-                                                  data_path=f"data/archived/GuitarSet/{self.spanning_octaves}_octaves/",
-                                                  shuffle=False,
-                                                  frame_size=self.frame_size)
+        self.validation_sequence = DataSequence(self.partition["test"],
+                                                batch_size=400,
+                                                data_path=f"data/archived/GuitarSet/{self.spanning_octaves}_octaves/",
+                                                shuffle=False,
+                                                frame_size=self.frame_size)
 
 
     def build_model(self):
@@ -230,7 +224,7 @@ class NeuralNetwork:
         else:
             if not checkpoints:
                 self.model.fit(
-                    self.training_generator,
+                    self.training_sequence,
                     epochs=self.epochs,
                     use_multiprocessing=True,
                     workers=6
@@ -240,7 +234,7 @@ class NeuralNetwork:
                 os.makedirs(checkpoint_path)
                 callback = ModelCheckpoint(filepath=checkpoint_path + "/weights_epoch_{epoch:02d}.h5", save_weights_only=True, verbose=1)
                 self.model.fit(
-                    self.training_generator,
+                    self.training_sequence,
                     epochs=self.epochs,
                     use_multiprocessing=True,
                     workers=6,
@@ -251,8 +245,8 @@ class NeuralNetwork:
         self.y_gt = np.empty((len(self.partition["test"]), 6, self.num_classes))
         self.y_pred = np.empty((len(self.partition["test"]), 6, self.num_classes))
         index = 0
-        for i in range(len(self.validation_generator)):
-            X_test, y_gt = self.validation_generator[i]
+        for i in range(len(self.validation_sequence)):
+            X_test, y_gt = self.validation_sequence[i]
             y_pred = self.model.predict(X_test, verbose=0)
             size = len(y_pred[0])
             for sample_index in range(size):
@@ -276,12 +270,12 @@ class NeuralNetwork:
                 index += 1
 
     def evaluate(self):
-        self.metrics["pitch_precision"].append(pitch_precision(self.y_pred, self.y_gt))
-        self.metrics["pitch_recall"].append(pitch_recall(self.y_pred, self.y_gt))
-        self.metrics["pitch_f_score"].append(pitch_f_score(self.y_pred, self.y_gt))
-        self.metrics["tab_precision"].append(tab_precision(self.y_pred, self.y_gt))
-        self.metrics["tab_recall"].append(tab_recall(self.y_pred, self.y_gt))
-        self.metrics["tab_f_score"].append(tab_f_measure(self.y_pred, self.y_gt))
+        self.metrics["pitch_precision"] = pitch_precision(self.y_pred, self.y_gt)
+        self.metrics["pitch_recall"] = pitch_recall(self.y_pred, self.y_gt)
+        self.metrics["pitch_f_score"] = pitch_f_score(self.y_pred, self.y_gt)
+        self.metrics["tab_precision"] = tab_precision(self.y_pred, self.y_gt)
+        self.metrics["tab_recall"] = tab_recall(self.y_pred, self.y_gt)
+        self.metrics["tab_f_score"] = tab_f_measure(self.y_pred, self.y_gt)
 
     def plot_model(self, file_name):
         plot_model(self.model, to_file=f"{self.current_training_folder}{file_name}",
@@ -294,8 +288,6 @@ class NeuralNetwork:
         np.savez(self.current_training_folder + "predictions.npz", y_pred=self.y_pred, y_gt=self.y_gt)
 
     def save_results_csv(self):
-        df = pd.DataFrame.from_dict(self.metrics)
-        df.to_csv(self.current_training_folder + "results.csv")
         with open(self.current_training_folder + 'metrics.json', 'w') as file:
             json.dump(self.metrics, file, indent=4)
 

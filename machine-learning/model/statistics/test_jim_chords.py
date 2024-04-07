@@ -35,7 +35,7 @@ chords = {
 }
 
 
-model_folder = "model/training/saved/2024-03-26/train_80_20_1_8_octaves"
+model_folder = "model/training/saved/2024-04-03/train_83p_1_8_octaves"
 model_path = f"{model_folder}/model"
 checkpoint_path = f"{model_folder}/checkpoints"
 model = tf.keras.models.load_model(model_path)

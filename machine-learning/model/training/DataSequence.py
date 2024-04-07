@@ -2,7 +2,7 @@ import numpy as np
 import keras
 import pandas as pd
 
-class DataGenerator(keras.utils.Sequence):
+class DataSequence(keras.utils.Sequence):
 
     def __init__(self,
                  list_IDs,

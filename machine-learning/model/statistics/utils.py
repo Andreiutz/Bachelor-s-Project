@@ -1,5 +1,8 @@
 import numpy as np
-
+from sklearn.metrics import confusion_matrix
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 def tab_to_pitch(tab):
     result = []
     open_pitch_values = [40, 45, 50, 55, 59, 64]
@@ -48,3 +51,19 @@ def compute_pitch_list_from_archive(y_pred_archive, y_gt_archive):
         gt += gt_pitches
 
     return pred, gt
+
+def plot_confusion_matrix(pred, gt, title, labels=None, size=(20,15), xlabel='', ylabel=''):
+    if labels is None:
+        labels = []
+    table = pd.DataFrame(confusion_matrix(gt, pred))
+    plt.figure(figsize=size)
+    ax = sns.heatmap(table, annot=True, fmt='d', cmap='viridis',  annot_kws={"size": 20})
+    ax.set_title(title, fontsize=20)
+    if len(labels) != 0:
+        ax.set_xticklabels(labels)
+        ax.set_yticklabels(labels, rotation=0)
+    plt.xticks(fontsize=20)
+    plt.yticks(fontsize=20)
+    plt.xlabel(xlabel, fontsize=20)
+    plt.ylabel(ylabel, fontsize=20)
+    plt.show()

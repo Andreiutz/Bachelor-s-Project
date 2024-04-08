@@ -52,6 +52,23 @@ def compute_pitch_list_from_archive(y_pred_archive, y_gt_archive):
 
     return pred, gt
 
+def notes_and_positions(tab):
+    result = {
+        "notes" : [],
+        "frets" : []
+    }
+    midi_pitches = [40, 45, 50, 55, 59, 64]
+    for i, string in enumerate(tab):
+        fret_index = np.argmax(string)
+        #there is actually a note
+        if fret_index > 0:
+            result["frets"].append(fret_index-1)
+            result["notes"].append(midi_pitches[i] + fret_index - 1)
+        else:
+            result["frets"].append(-1)
+            result["notes"].append(0)
+    return result
+
 def plot_confusion_matrix(pred, gt, title, labels=None, size=(20,15), xlabel='', ylabel=''):
     if labels is None:
         labels = []

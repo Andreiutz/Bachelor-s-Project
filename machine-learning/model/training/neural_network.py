@@ -28,9 +28,9 @@ class NeuralNetwork:
                  frame_size=9,
                  spanning_octaves=8,
                  bins_per_octaves=36,
-                 initial_learning_rate = 0.1,
+                 initial_learning_rate = 0.05,
                  decay_steps = 3000,
-                 decay_rate = 0.3,
+                 decay_rate = 0.5,
                  staircase = True,
                  data_path="data/archived/",
                  id_file="id_22050.csv",
@@ -144,7 +144,7 @@ class NeuralNetwork:
         conv2d_2 = Conv2D(64, (3,3), activation='relu')(conv2d_1)
         conv2d_3 = Conv2D(64, (3,3), activation='relu')(conv2d_2)
         max_pooling_3 = MaxPooling2D(pool_size=(2,2))(conv2d_3)
-        dropout_1 = Dropout(0.6)(max_pooling_3)
+        dropout_1 = Dropout(0.5)(max_pooling_3)
         flatten_1 = Flatten()(dropout_1)
 
         # EString output

@@ -25,7 +25,7 @@ def configure_gpu():
 
 if __name__ == '__main__':
     configure_gpu()
-    neural_network = NeuralNetwork(spanning_octaves=8)
+    neural_network = NeuralNetwork(spanning_octaves=8, info="kernel regularizer l2 003 for conv2d layers, dropout 0.5 only for branches")
 
     test_index = 2
     print("\ntest guitarist index: " + str(test_index))

@@ -60,7 +60,6 @@ def pitch_f_score(predictions, ground_truths):
 
 
 def tab_precision(predictions, ground_truths):
-    # get rid of "closed" class, as we only want to count positives
     tab_predictions = np.array(
         [tab_without_closed_class(pred) for pred in predictions]
     )
@@ -74,7 +73,6 @@ def tab_precision(predictions, ground_truths):
 
 
 def tab_recall(predictions, ground_truths):
-    # get rid of "closed" class, as we only want to count positives
     tab_pred = np.array([
         tab_without_closed_class(pred) for pred in predictions]
     )

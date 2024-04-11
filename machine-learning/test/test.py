@@ -8,7 +8,7 @@ def test_prediction():
     f = 'Am_01'
 
     #preprocess_service.archive_file_from_folder(f)
-    result = prediction_service.predict_strums(f)
+    result = prediction_service.predict_tablature(f)
 
 
 

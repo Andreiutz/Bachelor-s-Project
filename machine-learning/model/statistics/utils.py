@@ -74,7 +74,7 @@ def plot_confusion_matrix(pred, gt, title, labels=None, size=(20,15), xlabel='',
         labels = []
     table = pd.DataFrame(confusion_matrix(gt, pred))
     plt.figure(figsize=size)
-    ax = sns.heatmap(table, annot=True, fmt='d', cmap='viridis',  annot_kws={"size": 20})
+    ax = sns.heatmap(table, annot=True, fmt='d', cmap='viridis',  annot_kws={"size": 15})
     ax.set_title(title, fontsize=20)
     if len(labels) != 0:
         ax.set_xticklabels(labels)

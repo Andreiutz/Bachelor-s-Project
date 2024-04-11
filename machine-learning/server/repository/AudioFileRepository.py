@@ -16,7 +16,7 @@ class AudioFileRepository:
     def connect(self):
         return psycopg2.connect(**self.conn_params)
 
-    def create_audio_file(self, audio_file: AudioFile):
+    def add_file(self, audio_file: AudioFile):
         query = """
         INSERT INTO audio_files (audio_id, audio_name, last_edited) 
         VALUES (%s, %s, %s)
@@ -29,7 +29,7 @@ class AudioFileRepository:
                 cur.execute(query, values)
                 conn.commit()
 
-    def get_audio_file(self, audio_id):
+    def get_file(self, audio_id):
         query = "SELECT * FROM audio_files WHERE audio_id = %s"
         with self.connect() as conn:
             with conn.cursor() as cur:
@@ -39,7 +39,7 @@ class AudioFileRepository:
                     return AudioFile(*result)
                 return None
 
-    def get_all_audio_files(self):
+    def get_all(self):
         query = "SELECT * FROM audio_files"
         with self.connect() as conn:
             with conn.cursor() as cur:

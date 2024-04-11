@@ -1,6 +1,7 @@
 import os.path
 from datetime import datetime
 from server.domain.AudioFIle import AudioFile
+from server.exceptions.FileNotFoundException import FileNotFoundException
 import uuid
 
 from fastapi import UploadFile
@@ -20,13 +21,19 @@ class AudioFileService:
         unique_id = str(uuid.uuid4())
         original_file_name = file.filename.replace('.wav', '')
         date_posted = datetime.now()
-        audio_file = AudioFile(audio_id=unique_id, audio_name=original_file_name, last_edited= date_posted)
+        audio_file = AudioFile(audio_id=unique_id, audio_name=original_file_name, last_edited=date_posted)
 
-        os.mkdir(f"../data/audio/{unique_id}/")
+        os.mkdir(f"../data/{unique_id}/")
 
-        with open(f"../data/audio/{unique_id}/audio.wav", 'wb') as out_file:
+        with open(f"../data/{unique_id}/file.wav", 'wb') as out_file:
             out_file.write(file.file.read())
 
-        self.__repository.create_audio_file(audio_file=audio_file)
+        self.__repository.add_file(audio_file=audio_file)
 
         return audio_file
+
+    def get_audio_path(self, audio_id: str) ->  str:
+        file_path = f"../data/{audio_id}/file.wav"
+        if not os.path.exists(file_path):
+            raise FileNotFoundException("file not found")
+        return file_path

@@ -5,9 +5,12 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
 import { SongListComponent } from './song-list/song-list.component';
-import { SongDetailsComponent } from './song-list/song-details/song-details.component';
-import { TabDetailsComponent } from './song-list/song-details/tab-details/tab-details.component';
-import { LiveDetailsComponent } from './song-list/song-details/live-details/live-details.component';
+import {HttpClientModule} from "@angular/common/http";
+import { SongItemComponent } from './song-list/song-item/song-item.component';
+import {TabDetailsComponent} from "./song-details/tab-details/tab-details.component";
+import {SongDetailsComponent} from "./song-details/song-details.component";
+import {LiveDetailsComponent} from "./song-details/live-details/live-details.component";
+import {TimeFormatPipe} from "./song-list/song-item/time.format";
 
 @NgModule({
   declarations: [
@@ -16,11 +19,14 @@ import { LiveDetailsComponent } from './song-list/song-details/live-details/live
     SongListComponent,
     SongDetailsComponent,
     TabDetailsComponent,
-    LiveDetailsComponent
+    LiveDetailsComponent,
+    SongItemComponent,
+    TimeFormatPipe
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

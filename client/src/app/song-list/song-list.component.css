@@ -1,0 +1,39 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5vh;
+}
+
+.list-container {
+  display: flex;
+  flex-direction: column;
+  width: 100vh;
+  min-width: 500px;
+  height: 70vh;
+}
+
+.add-button {
+  background-color: #3D0814;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add-button:hover {
+  background-color: #6F1E2B;
+}
+
+.scrollable-wrapper {
+  background-color: #F8F4F9;
+  height: 70vh;
+  overflow-y: auto;
+  width: 100%;
+}

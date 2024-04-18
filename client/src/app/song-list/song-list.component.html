@@ -1,1 +1,10 @@
-<p>song-list works!</p>
+<div class="container">
+  <div class="scrollable-wrapper">
+    <div class="list-container">
+      <app-song-item *ngFor="let song of songs" [song]="song"></app-song-item>
+    </div>
+  </div>
+  <div class="add-button-container">
+    <button class="add-button">Upload</button>
+  </div>
+</div>

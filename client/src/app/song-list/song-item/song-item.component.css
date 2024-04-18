@@ -1,0 +1,52 @@
+.audio-player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.controls {
+  margin-top: 10px;
+}
+
+.controls button {
+  margin: 0 5px;
+}
+
+.item-container {
+  background-color: #fff;
+  margin-top: 2vh;
+  margin-left: 1vh;
+  margin-right: 1vh;
+  border-radius: 10px;
+  padding: 1vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-family: 'Inter', sans-serif;
+  min-height: 3vh;
+  cursor: pointer;
+}
+
+.item-details-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 3vh;
+}
+
+.item-container:active:not(.button-clicked) {
+  background-color: #eee;
+}
+
+.song-duration-label {
+  margin-left: auto;
+}
+
+
+
+
+

@@ -4,8 +4,11 @@ header {
   background-color: #8C490B;
   width: 100%;
   min-width: 400px;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  height: 8vh;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: left;
 }
 
 .container {

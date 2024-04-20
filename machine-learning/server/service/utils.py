@@ -1,3 +1,6 @@
+import os.path
+import wave
+
 import numpy as np
 import librosa
 from typing import List
@@ -50,3 +53,12 @@ def get_onset_frames(y, sr):
         if max(y[start_audio_sample : end_audio_sample]) > 0.3 and end_frame - start_frame > 3: # end_frame - start_frame > 3 -> 0.06 seconds aprox
             filtered_frames.append([start_frame, end_frame])
     return filtered_frames
+
+def get_audio_duration(audio_path):
+    if os.path.exists(audio_path):
+        with wave.open(audio_path, 'rb') as f:
+            frames_length = f.getnframes()
+            frame_rate = f.getframerate()
+            return frames_length / float(frame_rate)
+    else:
+        return 0.0

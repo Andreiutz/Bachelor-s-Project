@@ -1,6 +1,6 @@
 import psycopg2
 
-from server.domain.AudioFIle import AudioFile
+from server.domain.AudioFile import AudioFile
 
 
 class AudioFileRepository:
@@ -18,15 +18,22 @@ class AudioFileRepository:
 
     def add_file(self, audio_file: AudioFile):
         query = """
-        INSERT INTO audio_files (audio_id, audio_name, last_edited) 
-        VALUES (%s, %s, %s)
+        INSERT INTO audio_files (audio_id, audio_name, last_edited, duration) 
+        VALUES (%s, %s, %s, %s)
         """
         values = (audio_file.get_audio_id(), audio_file.get_audio_name(),
-                   audio_file.get_last_edited())
+                   audio_file.get_last_edited(), audio_file.get_duration())
 
         with self.connect() as conn:
             with conn.cursor() as cur:
                 cur.execute(query, values)
+                conn.commit()
+
+    def delete_file(self, audio_id):
+        query = "DELETE FROM audio_files WHERE audio_id = %s"
+        with self.connect() as conn:
+            with conn.cursor() as cur:
+                cur.execute(query, (audio_id,))
                 conn.commit()
 
     def get_file(self, audio_id):

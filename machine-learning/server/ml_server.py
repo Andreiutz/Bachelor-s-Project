@@ -1,6 +1,8 @@
 import sys
 import os
 
+from starlette.middleware.cors import CORSMiddleware
+
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(project_root)
 os.chdir(project_root)
@@ -17,7 +19,13 @@ from server.service.CacheService import CacheService
 from server.exceptions.FileNotFoundException import FileNotFoundException
 
 app = FastAPI()
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
+)
 repository = AudioFileRepository(
     host='localhost',
     dbname='guitar_ml',
@@ -48,6 +56,17 @@ def predict_tablature_from_folder(name: str, load: bool):
     except Exception as e:
         return HTTPException(status_code=400, detail=str(e))
 
+@app.post("/predict-tab")
+def predict_tablature_from_upload(file: UploadFile = File(...)):
+    try:
+        audio_file = audioFileService.persist_audio_file(file)
+        preprocessService.archive_file_from_upload(file, audio_file.get_audio_id())
+        prediction = predictionService.predict_tablature(audio_file.get_audio_id(), cache=True)
+        return JSONResponse(status_code=200, content=prediction)
+    except Exception as e:
+        return HTTPException(status_code=400, detail=str(e))
+
+
 @app.get("/predict-full")
 def predict_full_from_folder(name: str, load: bool):
     try:
@@ -56,8 +75,17 @@ def predict_full_from_folder(name: str, load: bool):
     except Exception as e:
         return HTTPException(status_code=400, detail=str(e))
 
+@app.post("/upload")
+def upload_file(file: UploadFile = File(...)):
+    try:
+        audio_file = audioFileService.persist_audio_file(file)
+        preprocessService.archive_file_from_upload(file, audio_file.get_audio_id())
+        return JSONResponse(status_code=200, content=audioFileService.obj_to_dict(audio_file))
+    except Exception as e:
+        return HTTPException(status_code=400, detail=str(e))
+
 @app.post("/predict-full")
-def predict_audio_from_upload(file: UploadFile = File(...)):
+def predict_full_from_upload(file: UploadFile = File(...)):
     try:
         audio_file = audioFileService.persist_audio_file(file)
         preprocessService.archive_file_from_upload(file, audio_file.get_audio_id())
@@ -66,21 +94,27 @@ def predict_audio_from_upload(file: UploadFile = File(...)):
     except Exception as e:
         return HTTPException(status_code=400, detail=str(e))
 
+
 @app.get("/songs")
 def get_audio_list():
     try:
         audio_files = repository.get_all()
         return JSONResponse(status_code=200, content=[
-            {
-                "id" : a.get_audio_id(),
-                "name" : a.get_audio_name(),
-                "last_edited" : a.get_last_edited().isoformat()
-            }
+            audioFileService.obj_to_dict(a)
             for a in audio_files
         ])
     except Exception as e:
         return HTTPException(status_code=400, detail=str(e))
 
+@app.delete("/songs")
+def delete_audio(audio_id: str):
+    try:
+        audio_file = audioFileService.delete_audio(audio_id)
+        return JSONResponse(status_code=200, content=[
+            audioFileService.obj_to_dict(audio_file)
+        ])
+    except Exception as e:
+        return HTTPException(status_code=400, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

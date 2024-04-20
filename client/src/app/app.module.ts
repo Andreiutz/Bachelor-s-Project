@@ -11,6 +11,10 @@ import {TabDetailsComponent} from "./song-details/tab-details/tab-details.compon
 import {SongDetailsComponent} from "./song-details/song-details.component";
 import {LiveDetailsComponent} from "./song-details/live-details/live-details.component";
 import {TimeFormatPipe} from "./song-list/song-item/time.format";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatIconModule} from "@angular/material/icon";
+import {MatTooltipModule} from "@angular/material/tooltip";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
@@ -21,13 +25,17 @@ import {TimeFormatPipe} from "./song-list/song-item/time.format";
     TabDetailsComponent,
     LiveDetailsComponent,
     SongItemComponent,
-    TimeFormatPipe
+    TimeFormatPipe,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        HttpClientModule,
+        BrowserAnimationsModule,
+        MatIconModule,
+        MatTooltipModule,
+        MatProgressSpinnerModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })

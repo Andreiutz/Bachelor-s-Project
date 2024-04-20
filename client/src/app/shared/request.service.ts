@@ -20,4 +20,10 @@ export class RequestService {
       return this.http.get(`${this.basePath}/file?audio_id=${audioId}`, {responseType: 'blob'})
     }
 
+    uploadAudio(file: File) {
+      const formData = new FormData();
+      formData.append('file', file)
+      return this.http.post<ISong>(`${this.basePath}/upload`, formData)
+    }
+
 }

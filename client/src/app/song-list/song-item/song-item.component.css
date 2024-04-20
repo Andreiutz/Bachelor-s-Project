@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 .controls {
@@ -14,9 +15,7 @@
 
 .item-container {
   background-color: #fff;
-  margin-top: 2vh;
-  margin-left: 1vh;
-  margin-right: 1vh;
+  margin: 1vh;
   border-radius: 10px;
   padding: 1vh;
   display: flex;
@@ -26,7 +25,7 @@
   font-weight: bold;
   font-family: 'Inter', sans-serif;
   min-height: 3vh;
-  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .item-details-container {
@@ -35,7 +34,8 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  height: 3vh;
+  height: 4vh;
+  cursor: pointer;
 }
 
 .item-container:active:not(.button-clicked) {
@@ -46,7 +46,33 @@
   margin-left: auto;
 }
 
+.item-options-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1vw;
+  width: 100%;
+}
 
+.custom-info-icon {
+  color: #3D0814;
+  font-size: 24px;
+}
+
+.custom-info-icon:hover {
+  color: #6F1E2B;
+}
+
+
+.custom-delete-icon {
+  color: red;
+  font-size: 24px;
+}
+
+.custom-delete-icon:hover {
+  color: brown;
+}
 
 
 

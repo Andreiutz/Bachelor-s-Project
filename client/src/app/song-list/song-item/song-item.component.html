@@ -3,15 +3,33 @@
     class="item-details-container"
     (click)="onItemClick()">
     <p class="song-name-label">{{song.name}}</p>
-    <p class="song-duration-label">{{song.duration | timeFormat}}</p>
+    <p class="song-duration-label" *ngIf="!showAudio">{{song.duration | timeFormat}}</p>
   </div>
-  <div class="audio-player" *ngIf="showAudio">
-    <audio #audioPlayer controls></audio>
-<!--    <div class="controls">-->
-<!--      <button (click)="play()">Play</button>-->
-<!--      <button (click)="pause()">Pause</button>-->
-<!--    </div>-->
+  <div
+    class="item-options-container"
+    *ngIf="showAudio">
+    <div
+      class="audio-player">
+      <audio #audioPlayer controls></audio>
+      <!--    <div-->
+      <!--      class="controls">-->
+      <!--      <button (click)="play()">Play</button>-->
+      <!--      <button (click)="pause()">Pause</button>-->
+      <!--    </div>-->
+    </div>
+    <div
+      class="info-button-container"
+      (click)="onInfoButtonCLick()">
+      <mat-icon
+        matTooltip="Song info"
+        class="custom-info-icon">info</mat-icon>
+    </div>
+    <div
+      class="delete-button-container"
+      (click)="onDeleteButtonClick()">
+      <mat-icon
+        matTooltip="Delete song"
+        class="custom-delete-icon">delete_outline</mat-icon>
+    </div>
   </div>
 </div>
-<!--<button (click)="onAudioClick()">Audio</button>-->
-<!--<button (click)="onCloseClick()">Close</button>-->

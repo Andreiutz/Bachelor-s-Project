@@ -19,7 +19,7 @@ export class SongItemComponent implements OnInit {
   showAudio = false;
 
   ngOnInit() {
-    console.log(this.song);
+
   }
 
   play() {
@@ -43,7 +43,7 @@ export class SongItemComponent implements OnInit {
         const audioBlob = new Blob([blob], {type: 'audio/wav'});
         this.audioPlayer.nativeElement.src = URL.createObjectURL(audioBlob);
         this.timeUpdateListener = () => {
-          console.log('Current time:', this.audioPlayer.nativeElement.currentTime)
+          // console.log('Current time:', this.audioPlayer.nativeElement.currentTime)
         };
         this.audioPlayer.nativeElement.addEventListener('timeupdate', this.timeUpdateListener)
       })
@@ -58,5 +58,13 @@ export class SongItemComponent implements OnInit {
         this.itemContainer.nativeElement.classList.remove('button-clicked');
       }
     }
+  }
+
+  onInfoButtonCLick() {
+    console.log(this.song.id)
+  }
+
+  onDeleteButtonClick() {
+    console.log(`Delete ${this.song.id}`)
   }
 }

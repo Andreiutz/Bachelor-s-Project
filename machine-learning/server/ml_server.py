@@ -7,7 +7,7 @@ project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(project_root)
 os.chdir(project_root)
 
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Query
 from fastapi.responses import FileResponse
 
 from fastapi.responses import JSONResponse
@@ -44,7 +44,7 @@ def get_audio_file(audio_id: str):
         file_path = audioFileService.get_audio_path(audio_id)
         return FileResponse(file_path, media_type="audio/wav")
     except FileNotFoundException:
-        return HTTPException(status_code=404, detail="File not found")
+        raise HTTPException(status_code=404, detail="File not found")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get audio file: {str(e)}")
 
@@ -54,7 +54,7 @@ def predict_tablature_from_folder(name: str, load: bool):
         prediction = predictionService.predict_tablature(name, load=load)
         return JSONResponse(status_code=200, content=prediction)
     except Exception as e:
-        return HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/predict-tab")
 def predict_tablature_from_upload(file: UploadFile = File(...)):
@@ -64,7 +64,7 @@ def predict_tablature_from_upload(file: UploadFile = File(...)):
         prediction = predictionService.predict_tablature(audio_file.get_audio_id(), cache=True)
         return JSONResponse(status_code=200, content=prediction)
     except Exception as e:
-        return HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @app.get("/predict-full")
@@ -73,7 +73,7 @@ def predict_full_from_folder(name: str, load: bool):
         prediction = predictionService.predict_full_samples(name, load=load)
         return JSONResponse(status_code=200, content=prediction)
     except Exception as e:
-        return HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/upload")
 def upload_file(file: UploadFile = File(...)):
@@ -82,7 +82,7 @@ def upload_file(file: UploadFile = File(...)):
         preprocessService.archive_file_from_upload(file, audio_file.get_audio_id())
         return JSONResponse(status_code=200, content=audioFileService.obj_to_dict(audio_file))
     except Exception as e:
-        return HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/predict-full")
 def predict_full_from_upload(file: UploadFile = File(...)):
@@ -92,29 +92,36 @@ def predict_full_from_upload(file: UploadFile = File(...)):
         prediction = predictionService.predict_full_samples(audio_file.get_audio_id(), cache=True)
         return JSONResponse(status_code=200, content=prediction)
     except Exception as e:
-        return HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @app.get("/songs")
-def get_audio_list():
-    try:
-        audio_files = repository.get_all()
-        return JSONResponse(status_code=200, content=[
-            audioFileService.obj_to_dict(a)
-            for a in audio_files
-        ])
-    except Exception as e:
-        return HTTPException(status_code=400, detail=str(e))
+def get_audio(audio_id: str = Query(None)):
+    if audio_id is None:
+        try:
+            audio_files = repository.get_all()
+            return JSONResponse(status_code=200, content=[
+                audioFileService.obj_to_dict(a)
+                for a in audio_files
+            ])
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=str(e))
+    else:
+        try:
+            audio_file = repository.get_file(audio_id)
+            return JSONResponse(status_code=200, content=audioFileService.obj_to_dict(audio_file))
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=str(e))
 
 @app.delete("/songs")
 def delete_audio(audio_id: str):
     try:
         audio_file = audioFileService.delete_audio(audio_id)
-        return JSONResponse(status_code=200, content=[
+        return JSONResponse(status_code=200, content=
             audioFileService.obj_to_dict(audio_file)
-        ])
+        )
     except Exception as e:
-        return HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

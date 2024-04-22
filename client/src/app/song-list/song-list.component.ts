@@ -1,8 +1,6 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Song} from "../shared/song.model";
 import {RequestService} from "../shared/request.service";
-import {FileChangeEvent} from "@angular/compiler-cli/src/perform_watch";
-import {error} from "@angular/compiler-cli/src/transformers/util";
 
 @Component({
   selector: 'app-song-list',
@@ -14,23 +12,28 @@ export class SongListComponent implements OnInit{
   @ViewChild('fileInput') fileInput: ElementRef
   songs: Song[]
   filteredSongs: Song[] = [];
-  isFetching = false;
+  isLoading = false;
   fileName: string = "";
   fileChosen = false;
-  selectedFile: File;
+  selectedFile: File | undefined;
 
   constructor(private requestService: RequestService) {
   }
 
   ngOnInit() {
-    this.isFetching = true;
+    this.isLoading = true;
+    this.fetchSongs()
+  }
+
+  fetchSongs() {
     this.requestService.fetchSongList()
       .subscribe(response => {
         this.songs = response;
         this.filteredSongs = this.songs;
-        this.isFetching = false;
-    }, error => {
+        this.isLoading = false;
+      }, error => {
         alert(`Error: ${error.message}`)
+        this.isLoading = false;
       })
   }
 
@@ -42,20 +45,26 @@ export class SongListComponent implements OnInit{
   }
 
   onConfirmButtonClick() {
-    this.isFetching = true;
+    this.isLoading = true;
     if (this.selectedFile) {
       this.requestService.uploadAudio(this.selectedFile)
         .subscribe(
           song  => {
-          this.songs.push(song)
-            this.isFetching = false;
-        },
+            this.songs.push(song)
+            this.fileName = "";
+            this.selectedFile = undefined;
+            this.fileChosen = false;
+            this.onSearchChange()
+            this.isLoading = false;
+          },
           error => {
-            alert(`Error: ${error.message}`)})
+            alert(`Error: ${error.message}`)
+            this.isLoading = false;
+          })
     }
   }
 
-  onChange(event: any) {
+  onFileChange(event: any) {
     this.fileName = event.target.files[0].name;
     this.selectedFile = event.target.files[0];
     this.fileChosen = true;
@@ -63,5 +72,19 @@ export class SongListComponent implements OnInit{
 
   onUploadButtonClick() {
     this.fileInput.nativeElement.click();
+  }
+
+  onDeleteEvent($event: string) {
+    this.isLoading = true;
+    this.requestService.deleteSong($event)
+      .subscribe(song => {
+        console.log(song.id)
+        this.songs = this.songs.filter(s => s.id !== song.id)
+        this.onSearchChange()
+        this.isLoading = false;
+      }, error => {
+        alert(`Error: ${error.message}`)
+        this.isLoading = false;
+      })
   }
 }

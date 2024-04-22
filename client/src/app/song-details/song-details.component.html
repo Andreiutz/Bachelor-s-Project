@@ -1,1 +1,2 @@
-<p>song-details works!</p>
+<p *ngIf="notFound">Song not found:(</p>
+<p *ngIf="!notFound">{{song.name}}</p>

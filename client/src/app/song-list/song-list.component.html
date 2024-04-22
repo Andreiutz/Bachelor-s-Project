@@ -10,12 +10,15 @@
   </div>
   <div class="scrollable-wrapper">
     <div
-      *ngIf="isFetching"
+      *ngIf="isLoading"
       class="spinner-overlay">
       <mat-spinner color="accent"></mat-spinner>
     </div>
     <div class="list-container">
-      <app-song-item *ngFor="let song of filteredSongs" [song]="song"></app-song-item>
+      <app-song-item
+        *ngFor="let song of filteredSongs"
+        [song]="song"
+        (deleteEvent)="onDeleteEvent($event)"></app-song-item>
     </div>
   </div>
 
@@ -25,7 +28,7 @@
       #fileInput
       type="file"
       accept=".wav"
-      (change)="onChange($event)"
+      (change)="onFileChange($event)"
       style="display:none"/>
     <div class="upload-file-buttons-container">
       <button

@@ -16,6 +16,14 @@ export class RequestService {
         return this.http.get<ISong[]>(`${this.basePath}/songs`, {headers: this.headers})
     }
 
+    fetchSong(audioId: string) {
+      return this.http.get<ISong>(`${this.basePath}/songs?audio_id=${audioId}`)
+    }
+
+    deleteSong(audioId: string) {
+      return this.http.delete<ISong>(`${this.basePath}/songs?audio_id=${audioId}`)
+    }
+
     fetchAudio(audioId: string) {
       return this.http.get(`${this.basePath}/file?audio_id=${audioId}`, {responseType: 'blob'})
     }

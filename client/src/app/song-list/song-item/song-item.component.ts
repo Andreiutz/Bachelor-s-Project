@@ -1,6 +1,7 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Song} from "../../shared/song.model";
 import {RequestService} from "../../shared/request.service";
+import {error} from "@angular/compiler-cli/src/transformers/util";
 
 @Component({
   selector: 'app-song-item',
@@ -9,6 +10,7 @@ import {RequestService} from "../../shared/request.service";
 })
 export class SongItemComponent implements OnInit {
   @Input() song: Song;
+  @Output() deleteEvent = new EventEmitter<string>();
   @ViewChild('audioPlayer') audioPlayer: ElementRef;
   @ViewChild('itemContainer') itemContainer: ElementRef;
   timeUpdateListener: any;
@@ -65,6 +67,6 @@ export class SongItemComponent implements OnInit {
   }
 
   onDeleteButtonClick() {
-    console.log(`Delete ${this.song.id}`)
+    this.deleteEvent.emit(this.song.id)
   }
 }

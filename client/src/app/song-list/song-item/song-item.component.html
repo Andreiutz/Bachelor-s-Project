@@ -20,9 +20,11 @@
     <div
       class="info-button-container"
       (click)="onInfoButtonCLick()">
-      <mat-icon
-        matTooltip="Song info"
-        class="custom-info-icon">info</mat-icon>
+      <a [routerLink]="['/home', song.id]">
+        <mat-icon
+          matTooltip="Song info"
+          class="custom-info-icon">info</mat-icon>
+      </a>
     </div>
     <div
       class="delete-button-container"

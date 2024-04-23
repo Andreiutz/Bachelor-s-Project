@@ -24,9 +24,11 @@
       class="info-container">
       <app-tab-details
         *ngIf="tablatureTabSelected"
-        [metadata]="tablatureMetadata"
-        [song]="song"></app-tab-details>
-      <app-live-details *ngIf="!tablatureTabSelected"></app-live-details>
+        [metadata]="tablatureMetadata"></app-tab-details>
+      <app-live-details
+        *ngIf="!tablatureTabSelected"
+        [metadata]="liveMetadata"
+      ></app-live-details>
     </div>
   </div>
 </div>

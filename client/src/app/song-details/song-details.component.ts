@@ -54,6 +54,10 @@ export class SongDetailsComponent implements OnInit, OnDestroy{
         concatMap(response => {
           //Initialize strums and send the audio further
           this.tablatureMetadata = response;
+          return this.requestService.fetchFullStrums(this.song.id);
+        }),
+        concatMap(response => {
+          this.liveMetadata = response;
           return this.requestService.fetchAudio(this.song.id)
         })
       )

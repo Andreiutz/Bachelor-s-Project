@@ -39,4 +39,8 @@ export class RequestService {
       return this.http.get<ISongMetadata>(`${this.basePath}/predict-tab?name=${audioId}&load=${loadCache}`)
     }
 
+    fetchFullStrums(audioId: string, loadCache: boolean = true) {
+      return this.http.get<ISongMetadata>(`${this.basePath}/predict-full?name=${audioId}&load=${loadCache}`)
+    }
+
 }

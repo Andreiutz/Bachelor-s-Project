@@ -1,0 +1,7 @@
+<div
+  class="fret"
+  [class.first]="fretIndex==0"
+  [class.last]="fretIndex==19">
+  <div class="line"></div>
+  <div *ngIf="display" class="ball"></div>
+</div>

@@ -8,7 +8,7 @@
 }
 
 .spinner-overlay {
-  position: relative;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -75,6 +75,7 @@
 
 
 .scrollable-wrapper {
+  position: relative;
   background-color: #F8F4F9;
   height: 70vh;
   overflow-y: auto;
@@ -92,17 +93,22 @@
   margin-bottom: 1vh;
 }
 
+/* Search bar container */
 .input-searchbar {
   font-family: 'Inter', sans-serif;
-  padding: 5px;
-  width: 33%;
-  border: 1px solid #3D0814;
-  outline: none;
+  padding: 8px;
+  width: 100%;
+  max-width: 400px;
+  border: 2px solid #ccc;
+  border-radius: 20px;
+  background-color: #f8f8f8;
+  transition: border-color 0.3s ease;
 }
 
 .input-searchbar:focus {
-  border: 2px solid #6F1E2B;
+  border-color: #6F1E2B;
 }
+
 
 .upload-file-container {
   width: 100%;

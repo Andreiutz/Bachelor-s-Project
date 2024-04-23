@@ -1,4 +1,19 @@
 <div
   class="live-container">
-<p>Hello</p>
+  <div class="string-container">
+    <p class="label">ID</p>
+    <div class="fret-index-container" *ngFor="let fret of grif[0]">
+      <p>{{fret}}</p>
+    </div>
+  </div>
+  <div
+    *ngFor="let string of grif; let i = index;"
+    class="string-container">
+    <p class="label">{{stringLabels[i]}}</p>
+    <app-fret
+      *ngFor="let fret of grif[i]; let j = index"
+    [stringIndex]="i"
+    [fretIndex]="j"
+    [display]="isFretActive(i, j)"></app-fret>
+  </div>
 </div>

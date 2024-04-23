@@ -16,6 +16,7 @@ import {MatIconModule} from "@angular/material/icon";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import { StrumComponent } from './song-details/tab-details/strum/strum.component';
+import { FretComponent } from './song-details/live-details/fret/fret.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { StrumComponent } from './song-details/tab-details/strum/strum.component
     SongItemComponent,
     TimeFormatPipe,
     StrumComponent,
+    FretComponent,
   ],
     imports: [
         BrowserModule,

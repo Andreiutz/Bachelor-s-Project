@@ -1,0 +1,17 @@
+.tablature-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  width: 70vw;
+  height: 40vh;
+  background-color: white;
+  overflow-x: auto;
+  padding-left: 1vw;
+  padding-right: 1vw;
+  gap: 2px;
+}
+
+.active {
+  color: red;
+}

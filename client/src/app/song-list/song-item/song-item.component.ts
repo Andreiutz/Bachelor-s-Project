@@ -13,7 +13,6 @@ export class SongItemComponent implements OnInit {
   @Output() deleteEvent = new EventEmitter<string>();
   @ViewChild('audioPlayer') audioPlayer: ElementRef;
   @ViewChild('itemContainer') itemContainer: ElementRef;
-  timeUpdateListener: any;
 
   constructor(private requestService: RequestService) {
   }
@@ -36,7 +35,6 @@ export class SongItemComponent implements OnInit {
   onItemClick() {
     if (this.showAudio) {
       this.toggleButtonClickedState(false)
-      this.audioPlayer.nativeElement.removeEventListener('timeupdate', this.timeUpdateListener);
       this.showAudio = false;
     } else {
       this.toggleButtonClickedState(true)
@@ -44,10 +42,6 @@ export class SongItemComponent implements OnInit {
       this.requestService.fetchAudio(this.song.id).subscribe(blob => {
         const audioBlob = new Blob([blob], {type: 'audio/wav'});
         this.audioPlayer.nativeElement.src = URL.createObjectURL(audioBlob);
-        this.timeUpdateListener = () => {
-          // console.log('Current time:', this.audioPlayer.nativeElement.currentTime)
-        };
-        this.audioPlayer.nativeElement.addEventListener('timeupdate', this.timeUpdateListener)
       })
     }
   }

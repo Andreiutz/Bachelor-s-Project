@@ -4,6 +4,7 @@
   align-items: center;
   justify-content: center;
   font-family: 'Inter', sans-serif;
+
 }
 
 .spinner-overlay {
@@ -23,10 +24,11 @@
 .list-container {
   display: flex;
   flex-direction: column;
-  width: 100vh;
+  width: 60vw;
   min-width: 500px;
   height: 70vh;
   padding: 0 7px 0 7px;
+
 }
 
 .file-add-button {
@@ -79,6 +81,7 @@
   width: 100%;
   padding-top: 1vh;
   padding-bottom: 1vh;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
 }
 
 .input-searchbar-container {

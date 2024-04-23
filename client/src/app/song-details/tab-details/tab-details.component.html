@@ -1,1 +1,9 @@
-<p>tab-details works!</p>
+<div
+  *ngIf="metadata"
+  class="tablature-container">
+  <app-strum style="margin-right: 5px" [data]="['E4', 'B3', 'G3', 'D3', 'A2', 'E2']"></app-strum>
+  <app-strum
+    *ngFor="let strum of metadata.strums let i = index"
+    [class.active]="isActive(i)"
+    [data]="strum.reverse()"></app-strum>
+</div>

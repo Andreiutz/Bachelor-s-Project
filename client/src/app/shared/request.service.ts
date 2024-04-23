@@ -1,6 +1,7 @@
 import {Injectable} from "@angular/core";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {ISong} from "./song.interface";
+import {ISongMetadata} from "./song-metadata.interface";
 
 @Injectable({providedIn: 'root'})
 export class RequestService {
@@ -32,6 +33,10 @@ export class RequestService {
       const formData = new FormData();
       formData.append('file', file)
       return this.http.post<ISong>(`${this.basePath}/upload`, formData)
+    }
+
+    fetchTabStrums(audioId: string, loadCache: boolean = true) {
+      return this.http.get<ISongMetadata>(`${this.basePath}/predict-tab?name=${audioId}&load=${loadCache}`)
     }
 
 }

@@ -15,6 +15,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatIconModule} from "@angular/material/icon";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import { StrumComponent } from './song-details/tab-details/strum/strum.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     LiveDetailsComponent,
     SongItemComponent,
     TimeFormatPipe,
+    StrumComponent,
   ],
     imports: [
         BrowserModule,

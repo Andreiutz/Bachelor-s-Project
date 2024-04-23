@@ -1,0 +1,7 @@
+.strum-container {
+  display: flex;
+  flex-direction: column;
+  font-family: "Roboto Mono", "Courier New", "monospace";
+  margin-left: 1vw;
+  font-size: 5vh;
+}

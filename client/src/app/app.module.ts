@@ -17,6 +17,8 @@ import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import { StrumComponent } from './song-details/tab-details/strum/strum.component';
 import { FretComponent } from './song-details/live-details/fret/fret.component';
+import { RecordAudioPopupComponent } from './song-list/record-audio-popup/record-audio-popup.component';
+import {MatDialogModule} from "@angular/material/dialog";
 
 @NgModule({
   declarations: [
@@ -30,6 +32,7 @@ import { FretComponent } from './song-details/live-details/fret/fret.component';
     TimeFormatPipe,
     StrumComponent,
     FretComponent,
+    RecordAudioPopupComponent,
   ],
     imports: [
         BrowserModule,
@@ -38,7 +41,8 @@ import { FretComponent } from './song-details/live-details/fret/fret.component';
         BrowserAnimationsModule,
         MatIconModule,
         MatTooltipModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        MatDialogModule
     ],
   providers: [],
   bootstrap: [AppComponent]

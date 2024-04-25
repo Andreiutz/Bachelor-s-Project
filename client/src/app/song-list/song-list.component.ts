@@ -1,6 +1,8 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Song} from "../shared/song.model";
 import {RequestService} from "../shared/request.service";
+import {MatDialog} from "@angular/material/dialog";
+import {RecordAudioPopupComponent} from "./record-audio-popup/record-audio-popup.component";
 
 @Component({
   selector: 'app-song-list',
@@ -17,7 +19,8 @@ export class SongListComponent implements OnInit{
   fileChosen = false;
   selectedFile: File | undefined;
 
-  constructor(private requestService: RequestService) {
+  constructor(private requestService: RequestService,
+              private dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -51,9 +54,7 @@ export class SongListComponent implements OnInit{
         .subscribe(
           song  => {
             this.songs.push(song)
-            this.fileName = "";
-            this.selectedFile = undefined;
-            this.fileChosen = false;
+            this.resetFile()
             this.onSearchChange()
             this.isLoading = false;
           },
@@ -74,6 +75,16 @@ export class SongListComponent implements OnInit{
     this.fileInput.nativeElement.click();
   }
 
+  onCancelButtonClick() {
+    this.resetFile()
+  }
+
+  resetFile() {
+    this.fileName = "";
+    this.selectedFile = undefined;
+    this.fileChosen = false;
+  }
+
   onDeleteEvent($event: string) {
     this.isLoading = true;
     this.requestService.deleteSong($event)
@@ -86,5 +97,10 @@ export class SongListComponent implements OnInit{
         alert(`Error: ${error.message}`)
         this.isLoading = false;
       })
+  }
+
+
+  onRecordButtonClick() {
+    const dialogRef = this.dialog.open(RecordAudioPopupComponent)
   }
 }

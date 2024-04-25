@@ -41,18 +41,18 @@
   box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
 }
 
-.attach-button {
+.main-button {
   background-color: #3D0814;
   border: 1px solid #3D0814;
   color: white;
 }
 
-.attach-button:hover {
+.main-button:hover {
   background-color: white;
   color: #3D0814;
 }
 
-.attach-button:active {
+.main-button:active {
   background-color: #ddd;
 }
 
@@ -73,6 +73,21 @@
   background-color: #ddd;
 }
 
+.cancel-button {
+  background-color: white;
+  color: red;
+  border: 1px solid white;
+}
+
+.cancel-button:hover {
+  color: white;
+  background-color: red;
+  border: red;
+}
+
+.cancel-button:active {
+  background-color: #ddd;
+}
 
 .scrollable-wrapper {
   position: relative;

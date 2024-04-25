@@ -1,0 +1,13 @@
+<div class="popup">
+  <div>
+    <button
+      (click)="startRecording()"
+      *ngIf="!isRecording">Start Recording</button>
+    <button
+      (click)="stopRecording()"
+      *ngIf="isRecording">Stop recording</button>
+  </div>
+  <audio
+    #audioPlayer controls></audio>
+  <a *ngIf="audioURL" [href]="audioURL" download="recorded_audio.wav">Download last recorded Audio</a>
+</div>

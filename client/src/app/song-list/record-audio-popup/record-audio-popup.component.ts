@@ -1,6 +1,8 @@
-import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
 import {AudioRecordingService} from "../../shared/audio-recording.service";
 import {RequestService} from "../../shared/request.service";
+import {DialogRef} from "@angular/cdk/dialog";
+import {ISong} from "../../shared/song.interface";
 
 @Component({
   selector: 'app-record-audio-popup',
@@ -8,22 +10,26 @@ import {RequestService} from "../../shared/request.service";
   styleUrls: ['./record-audio-popup.component.css']
 })
 export class RecordAudioPopupComponent implements OnInit {
+  @Output() songAdded = new EventEmitter<ISong>();
   @ViewChild('audioPlayer') audioPlayer!: ElementRef<HTMLAudioElement>;
   @ViewChild('selectAudioInput') audioInput: ElementRef<HTMLSelectElement>;
   @ViewChild('audioNameInput') nameInput: ElementRef<HTMLInputElement>;
   blob: Blob;
   isRecording = false;
+  isLoading = false;
   soundRecorded = false;
   manualStop = false;
   startTimer = 0;
   recordTimer = 0;
+  recordingCountdown = 0;
   audioURL: string | null = null;
   recordingDeviceId = 'default';
   recordingDevices: {id: string, label: string}[] = []
 
   constructor(private audioRecordingService: AudioRecordingService,
               private requestService: RequestService,
-              private cd: ChangeDetectorRef) { }
+              private cd: ChangeDetectorRef,
+              private dialogRef: DialogRef<any>) { }
 
   ngOnInit() {
     this.audioRecordingService.audioBlob$.subscribe(blob => {
@@ -40,22 +46,33 @@ export class RecordAudioPopupComponent implements OnInit {
 
   startRecording() {
     this.soundRecorded = false;
+    this.recordingCountdown = this.recordTimer;
+
     setTimeout(() => {
-        this.isRecording = true;
-        this.recordingDeviceId = this.audioInput.nativeElement.value ? this.audioInput.nativeElement.value : 'default'
-        this.audioRecordingService.startRecording(this.recordingDeviceId);
-        console.log(this.recordTimer)
-        if (!this.manualStop) {
-          setTimeout(() => {
-            this.stopRecording()
-          }, this.recordTimer * 1000)
+      this.isRecording = true;
+      this.recordingDeviceId = this.audioInput.nativeElement.value ? this.audioInput.nativeElement.value : 'default';
+      this.audioRecordingService.startRecording(this.recordingDeviceId);
+
+      if (!this.manualStop) {
+        setTimeout(() => {
+          this.stopRecording();
+        }, this.recordTimer * 1000);
+      }
+
+      const intervalId = setInterval(() => {
+        this.recordingCountdown--;
+        if (this.recordingCountdown <= 0) {
+          clearInterval(intervalId);
         }
-      }, this.startTimer * 1000)
+      }, 1000);
+    }, this.startTimer * 1000);
   }
+
 
   stopRecording() {
     this.isRecording = false;
     this.soundRecorded = true;
+    this.recordTimer = 0;
     this.audioRecordingService.stopRecording();
   }
 
@@ -72,12 +89,16 @@ export class RecordAudioPopupComponent implements OnInit {
   }
 
   uploadAudio(fileName: string) {
+    this.isLoading = true;
     const file = new File([this.blob], `${fileName}.wav`, {type: 'audio/wav'});
     this.requestService.uploadAudio(file)
       .subscribe(response => {
-          console.log(response)
+        this.isLoading = false;
+        this.songAdded.emit(response);
+        this.dialogRef.close();
       }, error => {
         alert('Error: ' + error.message)
+        this.isLoading = false;
       })
   }
 

@@ -1,42 +1,82 @@
-<div class="popup">
+<ng-template #inputContainer>
+  <div class="select-input-container">
+    <label for="audioDevices">Audio input device</label>
+    <select
+      class="select-component"
+      #selectAudioInput
+      id="audioDevices">
+      <option *ngFor="let device of recordingDevices" [value]="device.id">{{ device.label}}</option>
+    </select>
+  </div>
   <div class="recording-controls-container">
     <div class="timer-container">
-      <label for="start_seconds">Timer</label>
-      <input (change)="onStartTimerChange($event)" type="number" id="start_seconds" min="0">
-
-      <label *ngIf="!manualStop" for="duration">Record timer</label>
-      <input *ngIf="!manualStop" (change)="onTimerChange($event)" type="number" id="duration" min="0">
+      <div class="column">
+        <label for="start_seconds">Start timer (s)</label>
+        <input
+          class="text_input"
+          (change)="onStartTimerChange($event)"
+          type="number"
+          id="start_seconds"
+          min="0">
+      </div>
+      <div class="column">
+        <label *ngIf="!manualStop" for="duration">Record timer (s)</label>
+        <input
+          class="text_input"
+          *ngIf="!manualStop"
+          (change)="onTimerChange($event)"
+          type="number"
+          id="duration"
+          min="0">
+      </div>
     </div>
 
-    <div class="checkbox-container">
-      <label for="manual_stop">Stop manually</label>
+    <div class="row" style="margin-bottom: 1vh">
+      <label for="manual_stop">Stop recording manually</label>
       <input type="checkbox" id="manual_stop" [value]="manualStop" (change)="manualStop = !manualStop">
     </div>
-
-    <div class="select-input-container">
-      <label for="audioDevices">Select Audio Device:</label>
-      <select
-        #selectAudioInput
-        id="audioDevices">
-        <option *ngFor="let device of recordingDevices" [value]="device.id">{{ device.label}}</option>
-      </select>
-    </div>
   </div>
-  <div>
+  <div class="column">
     <button
       (click)="startRecording()"
+      class="action-button start-button"
       *ngIf="!isRecording">Start Recording</button>
+    <p *ngIf="isRecording && recordingCountdown > 0">Time remaining: {{recordingCountdown}}</p>
     <button
       (click)="stopRecording()"
+      class="action-button stop-button"
       *ngIf="isRecording">Stop recording</button>
   </div>
-  <input
-    *ngIf="soundRecorded"
-    #audioNameInput
-    type="text">
-  <audio
-    *ngIf="soundRecorded"
-    #audioPlayer controls></audio>
-  <button *ngIf="soundRecorded" (click)="onUploadButtonClick()">Upload</button>
-  <a *ngIf="soundRecorded && audioURL" [href]="audioURL" download="recorded_audio.wav">Download last recorded Audio</a>
+</ng-template>
+
+<div class="popup">
+  <div
+    *ngIf="isLoading"
+    class="spinner-overlay">
+    <mat-spinner color="accent"></mat-spinner>
+  </div>
+  <div
+    *ngIf="soundRecorded else inputContainer"
+    class="recording-details-container">
+    <input
+      class="text_input"
+      *ngIf="soundRecorded"
+      #audioNameInput
+      type="text"
+      placeholder="Enter song name">
+      <div class="row" style="gap: 0.5vw">
+        <audio
+          *ngIf="soundRecorded"
+          #audioPlayer controls></audio>
+        <button
+          class="action-button main-button"
+          matTooltip="upload audio"
+          (click)="onUploadButtonClick()"><mat-icon>cloud_upload</mat-icon></button>
+        <button
+          class="action-button main-button"
+          matTooltip="retry"
+          (click)="soundRecorded = false"><mat-icon>undo</mat-icon></button>
+      </div>
+<!--    <a *ngIf="audioURL" [href]="audioURL" download="recorded_audio.wav">Download last recorded Audio</a>-->
+  </div>
 </div>

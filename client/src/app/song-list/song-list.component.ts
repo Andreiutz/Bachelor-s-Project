@@ -32,7 +32,9 @@ export class SongListComponent implements OnInit{
     this.requestService.fetchSongList()
       .subscribe(response => {
         this.songs = response;
-        this.filteredSongs = this.songs;
+        this.filteredSongs = this.songs.sort((a,b) => {
+          return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+        });
         this.isLoading = false;
       }, error => {
         alert(`Error: ${error.message}`)
@@ -42,9 +44,13 @@ export class SongListComponent implements OnInit{
 
   onSearchChange() {
     const searchInput = this.inputSearch.nativeElement.value;
-    this.filteredSongs = this.songs.filter((song) => {
+    this.filteredSongs = this.songs
+      .filter((song) => {
         return song.name.indexOf(searchInput) >= 0;
     })
+      .sort((a,b) => {
+        return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+      })
   }
 
   onConfirmButtonClick() {
@@ -102,5 +108,10 @@ export class SongListComponent implements OnInit{
 
   onRecordButtonClick() {
     const dialogRef = this.dialog.open(RecordAudioPopupComponent)
+    dialogRef.componentInstance.songAdded.subscribe(response => {
+      this.songs.push(response)
+      this.resetFile()
+      this.onSearchChange()
+    })
   }
 }

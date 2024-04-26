@@ -17,7 +17,6 @@ export class LiveDetailsComponent implements OnInit, OnDestroy {
   constructor(private notifyService: NotifyService) {}
 
   ngOnInit() {
-    console.log(this.metadata)
     this.grif = this.generateGrif();
     this.notifySubscription = this.notifyService.songTimeChanged$.subscribe(time => {
       this.time = time;
@@ -25,8 +24,6 @@ export class LiveDetailsComponent implements OnInit, OnDestroy {
       while (this.currentActiveStrum < this.metadata.strums.length-1 && this.time > this.metadata.times[this.currentActiveStrum][1]) {
         this.currentActiveStrum += 1;
       }
-      console.log(this.currentActiveStrum)
-      console.log(this.metadata.strums[this.currentActiveStrum])
     })
   }
 

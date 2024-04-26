@@ -30,7 +30,7 @@ class PredictionService:
         predictions = {
             "frames": [],
             "times": [],
-            "strum": []
+            "strums": []
         }
         archive_path = f"{folder_path}/file.npz"
         audio_path = f"{folder_path}/file.wav"
@@ -48,7 +48,7 @@ class PredictionService:
             predictions["frames"].append([int(frame_pair[0]), int(frame_pair[1])])
             predictions["times"].append(
                 [int(frame_pair[0]) * SECONDS_PER_FRAME, int(frame_pair[1]) * SECONDS_PER_FRAME])
-            predictions["strum"].append(predicted_strum)
+            predictions["strums"].append(predicted_strum)
         if cache:
             self.__cache_service.cache_data(path=folder_path, data=predictions, file_name="tabs")
         return predictions
@@ -64,7 +64,7 @@ class PredictionService:
         predictions = {
             "frames" : [],
             "times" : [],
-            "strum" : []
+            "strums" : []
         }
         archive_path = f"{folder_path}/file.npz"
         result = [get_predicted_strum_of_sample(x) for x in np.swapaxes(self.__predict_full_audio(archive_path), 0, 1)]
@@ -75,7 +75,7 @@ class PredictionService:
             if result[index] != result[index + 1]:
                 predictions["frames"].append([start, index])
                 predictions["times"].append([start * SECONDS_PER_FRAME, index * SECONDS_PER_FRAME])
-                predictions["strum"].append(result[index])
+                predictions["strums"].append(result[index])
                 start = index+1
             index += 1
         if cache:

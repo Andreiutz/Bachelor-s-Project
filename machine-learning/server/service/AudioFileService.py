@@ -4,6 +4,7 @@ from datetime import datetime
 from server.domain.AudioFile import AudioFile
 from server.exceptions.FileNotFoundException import FileNotFoundException
 import uuid
+import re
 
 from fastapi import UploadFile
 
@@ -20,8 +21,11 @@ class AudioFileService:
         if not file.filename.endswith('.wav'):
             raise InvalidFileFormatException('Invalid file format')
 
-        unique_id = str(uuid.uuid4())
         original_file_name = file.filename.replace('.wav', '')
+        if not self.__validate_file_name(original_file_name):
+            raise Exception('Invalid file name')
+
+        unique_id = str(uuid.uuid4())
         date_posted = datetime.now()
 
         os.mkdir(f"../data/{unique_id}/")
@@ -59,3 +63,12 @@ class AudioFileService:
             "last_edited": audio.get_last_edited().isoformat(),
             "duration": audio.get_duration()
         }
+
+    def __validate_file_name(self, filename: str):
+        if len(filename) == 0:
+            return False
+        pattern = r'^[a-zA-Z0-9\-_&$@]+$'
+        if re.match(pattern, filename):
+            return True
+        else:
+            return False

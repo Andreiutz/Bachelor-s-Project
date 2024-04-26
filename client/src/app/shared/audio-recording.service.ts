@@ -13,15 +13,40 @@ export class AudioRecordingService {
 
   audioBlob$ = this.audioBlobSubject.asObservable();
 
-  async startRecording() {
+  async startRecording(deviceId: string = 'default') {
+    const constraints = {
+      audio: {
+        deviceId: deviceId ? {exact : deviceId} : undefined
+      }
+    }
+
     if (this.audioContext.state === 'suspended') {
       await this.audioContext.resume();
     }
 
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
     this.mediaRecorder = new MediaRecorder(stream);
     this.mediaRecorder.ondataavailable = (event: any) => this.chunks.push(event.data);
     this.mediaRecorder.start();
+  }
+
+  async getRecordingDevices() {
+    const result: {id: string, label: string}[] = []
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const audioInputDevices = devices.filter(device => device.kind === 'audioinput');
+
+      audioInputDevices.forEach((device, index) => {
+        result.push({
+          id: device.deviceId,
+          label: device.label,
+        })
+        console.log(`${index + 1}. ${device.label} id: ${device.deviceId}`);
+      });
+    } catch (error) {
+      console.error('Error enumerating devices:', error);
+    }
+    return result;
   }
 
   async stopRecording() {

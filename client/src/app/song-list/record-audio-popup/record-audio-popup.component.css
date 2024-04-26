@@ -12,7 +12,17 @@
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1000;
-  width: 40vw;
-  height: 40vh;
+  width: 60vw;
+  height: 60vh;
 }
 
+.recording-controls-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.timer-container {
+  display: flex;
+  flex-direction: row;
+}

@@ -16,6 +16,7 @@ export class RecordAudioPopupComponent implements OnInit {
   @ViewChild('audioNameInput') nameInput: ElementRef<HTMLInputElement>;
   blob: Blob;
   isRecording = false;
+  recordStartLoading = false;
   isLoading = false;
   soundRecorded = false;
   manualStop = false;
@@ -47,9 +48,10 @@ export class RecordAudioPopupComponent implements OnInit {
   startRecording() {
     this.soundRecorded = false;
     this.recordingCountdown = this.recordTimer;
-
+    this.recordStartLoading = true;
     setTimeout(() => {
       this.isRecording = true;
+      this.recordStartLoading = false;
       this.recordingDeviceId = this.audioInput.nativeElement.value ? this.audioInput.nativeElement.value : 'default';
       this.audioRecordingService.startRecording(this.recordingDeviceId);
 
@@ -70,10 +72,12 @@ export class RecordAudioPopupComponent implements OnInit {
 
 
   stopRecording() {
-    this.isRecording = false;
-    this.soundRecorded = true;
-    this.recordTimer = 0;
-    this.audioRecordingService.stopRecording();
+      if (this.isRecording) {
+        this.isRecording = false;
+        this.soundRecorded = true;
+        this.recordTimer = 0;
+        this.audioRecordingService.stopRecording();
+      }
   }
 
   onStartTimerChange($event: any) {
@@ -103,4 +107,10 @@ export class RecordAudioPopupComponent implements OnInit {
   }
 
 
+  onRetryButtonClick() {
+    this.soundRecorded = false;
+    this.manualStop = false;
+    this.startTimer = 0;
+    this.recordTimer = 0;
+  }
 }

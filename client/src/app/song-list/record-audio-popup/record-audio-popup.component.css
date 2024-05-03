@@ -159,3 +159,9 @@ label {
   align-items: center;
   z-index: 9999;
 }
+
+.disabled-button {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}

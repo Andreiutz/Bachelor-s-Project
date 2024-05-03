@@ -13,6 +13,7 @@
       <div class="column">
         <label for="start_seconds">Start timer (s)</label>
         <input
+          [disabled]="recordStartLoading || isRecording"
           class="text_input"
           (change)="onStartTimerChange($event)"
           type="number"
@@ -22,6 +23,7 @@
       <div class="column">
         <label *ngIf="!manualStop" for="duration">Record timer (s)</label>
         <input
+          [disabled]="recordStartLoading || isRecording"
           class="text_input"
           *ngIf="!manualStop"
           (change)="onTimerChange($event)"
@@ -31,7 +33,9 @@
       </div>
     </div>
 
-    <div class="row" style="margin-bottom: 1vh">
+    <div
+      *ngIf="!isRecording && !recordStartLoading"
+      class="row" style="margin-bottom: 1vh">
       <label for="manual_stop">Stop recording manually</label>
       <input type="checkbox" id="manual_stop" [value]="manualStop" (change)="manualStop = !manualStop">
     </div>
@@ -39,9 +43,11 @@
   <div class="column">
     <button
       (click)="startRecording()"
+      [disabled]="recordStartLoading"
+      [class.disabled-button]="recordStartLoading"
       class="action-button start-button"
       *ngIf="!isRecording">Start Recording</button>
-    <p *ngIf="isRecording && recordingCountdown > 0">Time remaining: {{recordingCountdown}}</p>
+    <p *ngIf="!manualStop && isRecording && recordingCountdown > 0">Time remaining: {{recordingCountdown}}</p>
     <button
       (click)="stopRecording()"
       class="action-button stop-button"
@@ -75,7 +81,7 @@
         <button
           class="action-button main-button"
           matTooltip="retry"
-          (click)="soundRecorded = false"><mat-icon>undo</mat-icon></button>
+          (click)="onRetryButtonClick()"><mat-icon>undo</mat-icon></button>
       </div>
 <!--    <a *ngIf="audioURL" [href]="audioURL" download="recorded_audio.wav">Download last recorded Audio</a>-->
   </div>

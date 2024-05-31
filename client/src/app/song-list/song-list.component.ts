@@ -66,12 +66,14 @@ export class SongListComponent implements OnInit{
           },
           error => {
             alert(`Error: ${error.message}`)
+            this.resetFile();
             this.isLoading = false;
           })
     }
   }
 
   onFileChange(event: any) {
+    console.log('hello')
     this.fileName = event.target.files[0].name;
     this.selectedFile = event.target.files[0];
     this.fileChosen = true;
@@ -89,6 +91,7 @@ export class SongListComponent implements OnInit{
     this.fileName = "";
     this.selectedFile = undefined;
     this.fileChosen = false;
+    this.fileInput.nativeElement.value = '';
   }
 
   onDeleteEvent($event: string) {
